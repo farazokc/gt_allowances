@@ -21,9 +21,11 @@ class Trips(models.Model):
     travel_return_to = models.CharField(max_length=255)
     travel_distance = models.FloatField(max_length=255)
     cost = models.FloatField(max_length=255)
+    fuel =  models.FloatField(max_length=255)
 
 class Fuel_Prices(models.Model):
     price_id = models.AutoField(primary_key=True)
     fuel_type = models.CharField(max_length=255)
-    emp_id = models.CharField(max_length=255)
-    travel_from = models.CharField(max_length=255)
+    fuel_price = models.FloatField(max_length=255)
+    fuel_date = models.DateField(max_length=255)
+    
