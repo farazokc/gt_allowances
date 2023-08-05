@@ -23,6 +23,6 @@ class Trips(models.Model):
 
 class Fuel_Prices(models.Model):
     price_id = models.AutoField(primary_key=True)
-    fuel_type = models.CharField(primary_key=True, defualt="Petrol")
+    fuel_type = models.CharField(max_length=255)
     emp_id = models.CharField(max_length=255)
     travel_from = models.CharField(max_length=255)
