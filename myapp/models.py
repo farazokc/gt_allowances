@@ -5,6 +5,7 @@ from django.db import models
 class Users(models.Model):
     emp_id = models.CharField(primary_key=True, max_length=255)
     emp_name = models.CharField(max_length=255)
+    emp_pass = models.CharField(max_length=255)
     emp_addr = models.CharField(max_length=255)
 
 class Locations(models.Model):
