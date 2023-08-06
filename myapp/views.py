@@ -6,3 +6,6 @@ def index(request):
 
 def about(request):
     return HttpResponse('about')
+
+# def Signin(request):
+
