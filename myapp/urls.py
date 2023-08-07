@@ -22,5 +22,5 @@ urlpatterns = [
     path("", views.index, name="Login"),
     path('Home/', views.Signin, name = 'Home'),
     path('Transport/', views.Trans_req, name = 'Transport Request'),
-    path('Payment/', views.payment, name = 'payment'),
+    path('Payment/', views.payment, name = 'Payment'),
 ]
