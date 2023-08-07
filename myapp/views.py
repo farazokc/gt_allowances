@@ -2,12 +2,12 @@ from django.shortcuts import render, HttpResponse,redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Users
+# from django.contrib.auth import authenticate
+from allowances.auth import MyBackend
 
-# from .templates.login import empid, emp_pass
-# Create your views here.
+backend = MyBackend()
 def index(request):
     return render(request, 'index.html')
-
 
 @api_view(['POST'])
 def Login(request):
@@ -19,7 +19,7 @@ def Login(request):
 
     user = Users(emp_id, emp_pass)
 
-    session_user = Users.objects.filter(emp_id=emp_id,emp_pass=emp_pass)
+    session_user = backend.authenticate(request,emp_id=emp_id,emp_pass=emp_pass)
 
     if session_user:
         context = {
@@ -35,13 +35,24 @@ def Login(request):
 
 
 def Trans_req(request):
-    return render(request, 'transRequest.html')
+    if backend.get_active() == True:
+        return render(request, 'transRequest.html')
+    else:
+        return redirect("Index")
+
 
 def payment(request):
-    return render(request, 'allowances.html')
+    if backend.get_active() == True:
+        return render(request, 'allowances.html')
+    else:
+        return redirect("Index")
+
 
 def Home(request):
-    return render(request, 'home.html')
+    if backend.get_active() == True:
+        return render(request, 'home.html')
+    else:
+        return redirect("Index")
 
 
 
