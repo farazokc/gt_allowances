@@ -25,9 +25,9 @@ class Locations(models.Model):
         return self.loc_name
 class Trips(models.Model):
     readonly_fields = ('travel_id',)
-
-    travel_id = models.AutoField(primary_key=True, editable=True, auto_created=True)
-    emp_id = models.CharField(max_length=255)
+    trip_number  = models.AutoField(primary_key=True, editable=False)
+    travel_id = models.IntegerField( editable=False)
+    emp_id = models.IntegerField()
     travel_from = models.CharField(max_length=255)
     travel_to = models.CharField(max_length=255)
     travel_return_to = models.CharField(max_length=255)
@@ -36,9 +36,21 @@ class Trips(models.Model):
     fuel =  models.FloatField()
     class Meta:
         db_table = 'Trips'
-    
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only on creation
+            last_trip = Trips.objects.filter(emp_id=self.emp_id).order_by('-travel_id').first()
+            if last_trip:
+                print('Hello')
+                self.travel_id = last_trip.travel_id + 1
+            else :
+                print("Worlds")
+                self.travel_id = 1
+        super().save(*args, **kwargs)
+   
     def __str__(self) -> str:
-        return self.travel_id
+        return self.travel_from
+        
 class Fuel_Prices(models.Model):
     price_fields = ('emp_id',)
 
