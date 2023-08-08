@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+     <form action="Location_request/" method="POST">
+        {% csrf_token %}
+        <h1 class="h3 mb-3 fw-normal">Add Location</h1>
+        <div class="form-floating">
+            <input class="form-control" id="floatingInput" name="Location_alias" placeholder="Head-office" required type="text">
+            <label for="floatingInput">Employee Code</label>
+        </div>
+        <div class="form-floating">
+            <input class="form-control" id="floatingPassword" name="Location_address" placeholder="PIDC" required
+                   type="text">
+            <label for="floatingPassword">Password</label>
+        </div>
+        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+    </form>
+</body>
+</html>

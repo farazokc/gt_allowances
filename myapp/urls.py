@@ -22,8 +22,10 @@ urlpatterns = [
     path("", views.index, name="Index"),
     path("Login/", views.Login, name="Login"),
     path('Home/', views.Home, name = 'Home'),
-    path('Transport/', views.Trans_req, name = 'Transport Request'),
+    path('Transport/', views.Trans_req, name = 'Transport_Request'),
     path('Payment/', views.payment, name = 'Payment'),
     path('test/', views.Home, name = 'Test'),
+    path('add_location/', views.Add_Locations, name = 'locations'),
+    path('add_location/Location_request/', views.location_save, name = 'add_loc'),
 ]
 

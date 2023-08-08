@@ -54,9 +54,18 @@ def Login(request):
 
 
 def Trans_req(request):
-    print(get_all_locations())
+    data = get_all_locations()
+    context = {
+        'Location_alias' : data
+    }
+    # context = [get_all_locations()]
+    # print(context['Location_alias'])
+    #
+    # loc = context['Location_alias']
+    # for locations in loc:
+    #     print(locations)
     if backend.get_active() is True:
-        return render(request, 'transRequest.html')
+        return render(request, 'transRequest.html', context= context)
     else:
         return redirect("Index")
 
@@ -82,10 +91,28 @@ def Home(request):
 def test(request):
     return render(request, 'Home.html')
 
+def Add_Locations(request):
+    if backend.get_active() == True:
+        return render(request, 'add_location.html')
+    else:
+        return redirect("Index")
 
 def get_all_locations():
     location : list
-    location = Locations.objects.values_list('loc_id', flat=True)
+    location = Locations.objects.values_list('loc_name', flat=True)
     # Employees.objects.values_list('eng_name', flat=True)
-    print('Hello')
+    print(location)
     return location
+
+@api_view(['POST'])
+def location_save(request):
+    if backend.get_active() is True:
+        loc_alias = request.POST.get("Location_alias")
+        loc_address = request.POST.get("Location_address")
+        loc = Locations(loc_name=loc_alias, loc_address=loc_address)
+        loc.save()
+        return redirect('Transport_Request')
+    else:
+        return redirect("Index")
+
+
