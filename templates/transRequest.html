@@ -63,13 +63,15 @@
 
 
 
-            <form class="needs-validation" novalidate>
+            <form action="request/" method="POST">
+                {% csrf_token %}
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label" for="country">Country</label>
-                        <select class="form-select" id="country" required>
+                        <label class="form-label" for="Travel_from">Travel_from</label>
+                        <select class="form-select" id="country" >
+                            
                             {%for elements in Location_alias %}
-                            <option value="">{{elements}}</option>
+                            <option >{{elements}}</option>
                             {%endfor%}
 <!--                            <option>United States</option>-->
                         </select>
@@ -79,10 +81,10 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label" for="state">State</label>
-                        <select class="form-select" id="state" required>
+                        <label class="form-label" for="Travel_to">Travel_to</label>
+                        <select class="form-select" id="state" >
                             {%for elements in Location_alias %}
-                            <option value="">{{elements}}</option>
+                            <option>{{elements}}</option>
                             {%endfor%}
                         </select>
                         <div class="invalid-feedback">
@@ -91,10 +93,10 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label" for="state">State</label>
-                        <select class="form-select" id="state" required>
+                        <label class="form-label" for="Return_to">Return_to</label>
+                        <select class="form-select" id="state" >
                             {%for elements in Location_alias %}
-                            <option value="">{{elements}}</option>
+                            <option value="Travel_from">{{elements}}</option>
                             {%endfor%}
                         </select>
                         <div class="invalid-feedback">

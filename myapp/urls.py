@@ -27,5 +27,6 @@ urlpatterns = [
     path('test/', views.Home, name = 'Test'),
     path('add_location/', views.Add_Locations, name = 'locations'),
     path('add_location/Location_request/', views.location_save, name = 'add_loc'),
+    path('request/', views.plan_trip, name = 'plan_trip'),
 ]
 

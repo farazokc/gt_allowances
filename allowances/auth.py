@@ -5,6 +5,7 @@ from myapp.models import Users
 class MyBackend(BaseBackend):
     _INSTANCE = None
     __isActive = None
+    __Current_logged_in :  None
 
     def __init__(self):
         if MyBackend._INSTANCE is None:
@@ -23,6 +24,7 @@ class MyBackend(BaseBackend):
 
         if logged_in:
             self.__isActive = True
+            self.__Current_logged_in = emp_id
             return True
         else:
             return False
@@ -32,4 +34,6 @@ class MyBackend(BaseBackend):
 
     def get_active(self):
         return self.__isActive
-
+    
+    def get_current_logged_in(self):
+        return self.__Current_logged_in

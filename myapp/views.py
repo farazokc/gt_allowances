@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponse,redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Users, Locations
+from .models import Users, Locations, Trips
 # from django.contrib.auth import authenticate
 from allowances.auth import MyBackend
 # from db_helper import *
@@ -58,12 +58,6 @@ def Trans_req(request):
     context = {
         'Location_alias' : data
     }
-    # context = [get_all_locations()]
-    # print(context['Location_alias'])
-    #
-    # loc = context['Location_alias']
-    # for locations in loc:
-    #     print(locations)
     if backend.get_active() is True:
         return render(request, 'transRequest.html', context= context)
     else:
@@ -78,11 +72,7 @@ def payment(request):
 
 
 def Home(request):
-    # Check for session persistence
-    # ******************************
-    # print("RETURNING", backend.get_active())
-    # ******************************
-
+        
     if backend.get_active() == True:
         return render(request, 'home.html')
     else:
@@ -114,5 +104,19 @@ def location_save(request):
         return redirect('Transport_Request')
     else:
         return redirect("Index")
+    
+
+def plan_trip(request):
+    travel_from = request.POST.get("Travel_from")
+    travel_to   = request.POST.get( "Travel_To" )
+    Return_to   = request.POST.get( "Return_To" )
+    Emp_id = backend.get_current_logged_in()
+    Trip = Trips(travel_from = travel_from, travel_to = travel_to, emp_id = Emp_id, travel_return_to = Return_to ) 
+    Trip.save()
+    redirect(request, 'Home')
+    
 
 
+    
+
+    
