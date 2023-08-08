@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponse,redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Users
+from .models import Users, Locations
 # from django.contrib.auth import authenticate
 from allowances.auth import MyBackend
+# from db_helper import *
 
 backend = MyBackend.getInstance()
 def index(request):
@@ -53,7 +54,7 @@ def Login(request):
 
 
 def Trans_req(request):
-
+    print(get_all_locations())
     if backend.get_active() is True:
         return render(request, 'transRequest.html')
     else:
@@ -70,7 +71,7 @@ def payment(request):
 def Home(request):
     # Check for session persistence
     # ******************************
-    print("RETURNING", backend.get_active())
+    # print("RETURNING", backend.get_active())
     # ******************************
 
     if backend.get_active() == True:
@@ -80,3 +81,11 @@ def Home(request):
 
 def test(request):
     return render(request, 'Home.html')
+
+
+def get_all_locations():
+    location : list
+    location = Locations.objects.values_list('loc_id', flat=True)
+    # Employees.objects.values_list('eng_name', flat=True)
+    print('Hello')
+    return location

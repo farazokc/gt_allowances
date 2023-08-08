@@ -1,19 +1,16 @@
 <!doctype html>
-<html lang="en" data-bs-theme="auto">
+<html data-bs-theme="auto" lang="en">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="" name="description">
     <title>Signin</title>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    
     <!-- <link rel="icon" type="image/x-icon" href="https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png"> -->
-    <link rel="icon" type="image/x-icon" href="https://gatron.com/wp-content/uploads/2022/02/Gatron-footer-logo.png">
+    <link href="https://gatron.com/wp-content/uploads/2022/02/Gatron-footer-logo.png" rel="icon" type="image/x-icon">
 
     <style>
         .bd-placeholder-img {
@@ -114,38 +111,37 @@
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
+
     </style>
 </head>
 
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
-    <main class="form-signin w-100 m-auto">
-        <form action="Login/" method="POST">
-            {% csrf_token %}
-            <div class="row align-items-center justify-content-center mb-5">
-                <img src="https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png" alt="">
-            </div>
-            <h1 class="h3 mb-3 fw-normal">Sign in</h1>
-            <div class="form-floating">
-                <input type="text" class="form-control" id="floatingInput" name = "emp_id" placeholder="ASBC123" required>
-                <label for="floatingInput">Employee Code</label>
-            </div>
-            <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" name = "emp_pass" placeholder="Password" required>
-                <label for="floatingPassword">Password</label>
-            </div>
-            <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-        </form>
-    </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
-        integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
-        crossorigin="anonymous"></script>
-
+<main class="form-signin w-100 m-auto">
+    <form action="Login/" method="POST">
+        {% csrf_token %}
+        <div class="row align-items-center justify-content-center mb-5">
+            <img alt="" src="https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png">
+        </div>
+        <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+        <div class="form-floating">
+            <input class="form-control" id="floatingInput" name="emp_id" placeholder="ASBC123" required type="text">
+            <label for="floatingInput">Employee Code</label>
+        </div>
+        <div class="form-floating">
+            <input class="form-control" id="floatingPassword" name="emp_pass" placeholder="Password" required
+                   type="password">
+            <label for="floatingPassword">Password</label>
+        </div>
+        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+    </form>
+</main>
 </body>
-
+<script crossorigin="anonymous"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </html>

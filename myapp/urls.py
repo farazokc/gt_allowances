@@ -24,6 +24,6 @@ urlpatterns = [
     path('Home/', views.Home, name = 'Home'),
     path('Transport/', views.Trans_req, name = 'Transport Request'),
     path('Payment/', views.payment, name = 'Payment'),
-    path('test/', views.test, name = 'Test'),
+    path('test/', views.Home, name = 'Test'),
 ]
 
