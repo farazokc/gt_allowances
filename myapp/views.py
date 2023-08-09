@@ -87,13 +87,21 @@ def payment(request):
 
 def Home(request):
     if backend.get_active() == True:
-
+        
         # get and print
-        trip = Trips.objects.all().values('travel_id', 'travel_from', 'travel_to', 'travel_return_to')
+        travel_id = request.POST.get('travel_id')
+        if travel_id:
+            trip = Trips.objects.filter(emp_id = backend.get_current_logged_in(), travel_id = travel_id ).values('travel_id', 'travel_from', 'travel_to', 'travel_return_to')
+        else:
+            trip = Trips.objects.filter(emp_id = backend.get_current_logged_in() ).values('travel_id', 'travel_from', 'travel_to', 'travel_return_to')
+        
+        
+
         context = {
             "trips": trip,
         }
         print(context)
+
         return render(request, 'home.html', context=context)
     else:
         return redirect("Index")
@@ -154,11 +162,10 @@ def plan_trip(request):
     return redirect('Home')
 
 def add_petrol_price(request):
-    fuel_type = request.POST.get("fuel_type")
-    fuel_price = request.POST.get("fuel_price")
-
-    print(fuel_type)
-    print(fuel_price)
+    ft = request.POST.get("fuel_type")
+    fpp = request.POST.get("fuel_price")
+    fp = Fuel_Prices(fuel_price = fpp, fuel_type = ft)
+    fp.save()
 
     return render(request, "add_petrol.html")
 
