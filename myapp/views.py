@@ -86,9 +86,15 @@ def payment(request):
 
 
 def Home(request):
-        
     if backend.get_active() == True:
-        return render(request, 'home.html')
+
+        # get and print
+        trip = Trips.objects.all().values('travel_id', 'travel_from', 'travel_to', 'travel_return_to')
+        context = {
+            "trips": trip,
+        }
+        print(context)
+        return render(request, 'home.html', context=context)
     else:
         return redirect("Index")
 

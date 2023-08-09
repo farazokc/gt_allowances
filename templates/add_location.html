@@ -1,23 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+{% include 'header.html' %}
+
 <body>
-     <form action="Location_request/" method="POST">
-        {% csrf_token %}
-        <h1 class="h3 mb-3 fw-normal">Add Location</h1>
-        <div class="form-floating">
-            <input class="form-control" id="floatingInput" name="Location_alias" placeholder="Head-office" required type="text">
-            <label for="floatingInput">Employee Code</label>
-        </div>
-        <div class="form-floating">
-            <input class="form-control" id="floatingPassword" name="Location_address" placeholder="PIDC" required
-                   type="text">
-            <label for="floatingPassword">Password</label>
-        </div>
-        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-    </form>
+    {% include 'navbar.html' %}
+
+    <main class="form-signin w-100 m-auto">
+    <div class="container">
+        <form action="Location_request/" method="POST">
+            {% csrf_token %}
+            <div class="row align-items-center justify-content-center ms-4">
+                <h1 class="h3 mb-3 fw-normal">Add Location</h1>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input class="form-control" id="Location_alias" name="Location_alias" placeholder="Head-office" required type="text">
+                <label for="Location_alias">Location Alias</label>
+            </div>
+            <div class="form-floating mb-4">
+                <input class="form-control" id="Location_address" name="Location_address" placeholder="Fuel Location_address" required
+                       type="text">
+                <label for="Location_address">Location Address</label>
+            </div>
+            <button class="btn btn-primary w-100 py-2" type="submit">Add Location</button>
+        </form>
+    </div>
+</main>
+
+<!--     <form action="Location_request/" method="POST">-->
+<!--        {% csrf_token %}-->
+<!--        <h1 class="h3 mb-3 fw-normal">Add Location</h1>-->
+<!--        <div class="form-floating">-->
+<!--            <input class="form-control" id="floatingInput" name="Location_alias" placeholder="Head-office" required type="text">-->
+<!--            <label for="floatingInput">Location Alias</label>-->
+<!--        </div>-->
+<!--        <div class="form-floating">-->
+<!--            <input class="form-control" id="floatingPassword" name="Location_address" placeholder="PIDC" required-->
+<!--                   type="text">-->
+<!--            <label for="floatingPassword">Password</label>-->
+<!--        </div>-->
+<!--        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>-->
+<!--    </form>-->
 </body>
-</html>
+
+{% include 'footer.html' %}
