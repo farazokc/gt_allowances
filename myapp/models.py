@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 # Create your models here.
 
@@ -41,26 +42,29 @@ class Trips(models.Model):
         if not self.pk:  # Only on creation
             last_trip = Trips.objects.filter(emp_id=self.emp_id).order_by('-travel_id').first()
             if last_trip:
-                print('Hello')
                 self.travel_id = last_trip.travel_id + 1
             else :
-                print("Worlds")
                 self.travel_id = 1
         super().save(*args, **kwargs)
    
     def __str__(self) -> str:
-        return self.travel_from
+        return "emp_id: "+str(self.emp_id)+" "+ ("travel_id: ") + str(self.travel_id)
         
 class Fuel_Prices(models.Model):
-    price_fields = ('emp_id',)
+    price_fields = ('emp_id','fuel_date')
 
     price_id = models.AutoField(primary_key=True, editable=True, auto_created=True)
     fuel_type = models.CharField(max_length=255)
-    fuel_price = models.FloatField()
-    fuel_date = models.DateField(max_length=255)
+    fuel_price = models.IntegerField()
+    fuel_date = models.DateField(max_length=255, editable= False)
     class Meta:
         db_table = 'Fuel_Prices'
 
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only on creation
+            self.fuel_date = date.today()
+        super().save(*args, **kwargs)
+
     def __str__(self) -> str:
-        return self.price_id
+        return self.fuel_type
     

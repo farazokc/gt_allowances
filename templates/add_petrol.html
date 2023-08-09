@@ -1,0 +1,26 @@
+{% include 'header.html' %}
+
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+<main class="form-signin w-100 m-auto">
+    <div class="container">
+        <form action="/" method="POST">
+            {% csrf_token %}
+            <div class="row align-items-center justify-content-center ms-4">
+                <h1 class="h3 mb-3 fw-normal">Add Petrol Price</h1>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input class="form-control" id="fuelType" name="fuel_type" placeholder="Petrol" required type="text">
+                <label for="fuelType">Fuel Type</label>
+            </div>
+            <div class="form-floating mb-4">
+                <input class="form-control" id="fuelPrice" name="fuel_price" placeholder="Fuel Price" required
+                       type="number">
+                <label for="fuelPrice">Fuel Priec</label>
+            </div>
+            <button class="btn btn-primary w-100 py-2" type="submit">Add Price</button>
+        </form>
+    </div>
+</main>
+
+{% include 'footer.html' %}

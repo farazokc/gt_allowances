@@ -1,12 +1,13 @@
 from django.shortcuts import render, HttpResponse,redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Users, Locations, Trips
+from .models import Users, Locations, Trips, Fuel_Prices
 # from django.contrib.auth import authenticate
 from allowances.auth import MyBackend
 # from db_helper import *
 
 backend = MyBackend.getInstance()
+
 def index(request):
     if backend.get_active() == True:
         # Check for session persistence
@@ -19,6 +20,7 @@ def index(request):
 
 @api_view(['POST'])
 def Login(request):
+    request.session['loginMsg'] = None
     # Check for session persistence
     # ******************************
     # print("LOGIN RUNS ", backend.get_active())
@@ -40,18 +42,30 @@ def Login(request):
 
         if session_user:
             print(session_user)
-            context = {
-                "message": "Login successful"
-            }
+            # context = {
+            #     "message": "Login successful"
+            # }
             return redirect("Home")
             # return render(request, 'Home.html', context=context)
         else:
-            context = {
-                "message": "Login failed"
-            }
-            # return render(request, 'index.html', context=context)
-            return redirect("Index")
+            # context = {
+            #     "message": "Login failed"
+            # }
 
+            if not session_user:
+                if 'loginMsg' in request.session:
+                    del request.session['loginMsg']
+
+                request.session['loginMsg'] = "ID or Password is incorrect"
+                print("MESSAGE:" + request.session['loginMsg'])
+
+                # return render(request, 'index.html', context=context)
+                return redirect("Index")
+
+@api_view(['POST'])
+def Logout(request):
+    backend.logout()
+    return redirect("Index")
 
 def Trans_req(request):
     data = get_all_locations()
@@ -78,8 +92,8 @@ def Home(request):
     else:
         return redirect("Index")
 
-def test(request):
-    return render(request, 'Home.html')
+# def test(request):
+#     return render(request, 'Home.html')
 
 def Add_Locations(request):
     if backend.get_active() == True:
@@ -91,7 +105,6 @@ def get_all_locations():
     location : list
     location = Locations.objects.values_list('loc_name', flat=True)
     # Employees.objects.values_list('eng_name', flat=True)
-    print(location)
     return location
 
 @api_view(['POST'])
@@ -108,15 +121,40 @@ def location_save(request):
 
 def plan_trip(request):
     travel_from = request.POST.get("Travel_from")
-    travel_to   = request.POST.get( "Travel_To" )
+    travel_to   = request.POST.get("Travel_To")
     Return_to   = request.POST.get( "Return_To" )
+
+    if travel_from == travel_to or travel_to == Return_to:
+        if 'Message' in request.session:
+            del request.session['Message']
+
+        request.session['Message'] = "'Travel From' cannot be same as 'Travel To' and 'Travel To' cannot be same as 'Return To'"
+        print("MESSAGE:" + request.session['Message'])
+        # return redirect('Transport_Request', context = context)
+        return redirect('Transport_Request')
+
     Emp_id = backend.get_current_logged_in()
-    Trip = Trips(travel_from = travel_from, travel_to = travel_to, emp_id = Emp_id, travel_return_to = Return_to ) 
+    distance = 10
+    last_updated_price = Fuel_Prices.objects.filter(fuel_type = 'PETROL').order_by('-fuel_date').first()
+
+
+    if distance > 0 and last_updated_price.fuel_price > 0:
+        cost = (distance / 10)*last_updated_price.fuel_price
+    else:
+        cost = 0
+
+    Trip = Trips(travel_from = travel_from, travel_to = travel_to, emp_id = Emp_id, travel_return_to = Return_to, travel_distance = distance, cost = cost, fuel = last_updated_price.fuel_price  )
     Trip.save()
-    redirect(request, 'Home')
-    
+    return redirect('Home')
 
+def add_petrol_price(request):
+    fuel_type = request.POST.get("fuel_type")
+    fuel_price = request.POST.get("fuel_price")
 
-    
+    print(fuel_type)
+    print(fuel_price)
 
-    
+    return render(request, "add_petrol.html")
+
+def history(request):
+    return render(request, "history.html")

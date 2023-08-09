@@ -41,21 +41,22 @@
                         <a class="nav-link" href="http://localhost:8000/Transport/">Transport Req</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="http://localhost:8000/add_location/">Add Location</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://localhost:8000/add_price/">Add Petrol Price</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="http://localhost:8000/History/">History</a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="Logout/" method="POST">
+                            {% csrf_token %}
+                            <button class="btn btn-primary w-100 py-2" type="submit">Logout</button>
+                        </form>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 </main>
-</body>
-<script crossorigin="anonymous"
-        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
-        src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script crossorigin="anonymous"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script crossorigin="anonymous"
-        integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-</html>

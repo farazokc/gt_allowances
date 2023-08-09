@@ -58,22 +58,20 @@
 
 <div class="container">
     <main>
-
         <div class="col-md-7 col-lg-8 mx-auto p-2">
-
-
-
             <form action="request/" method="POST">
                 {% csrf_token %}
                 <div class="row g-3">
+                            {% if request.session.Message is not null %}
+                            {{request.session.Message}}
+                            {% endif %}
                     <div class="col-md-4">
-                        <label class="form-label" for="Travel_from">Travel_from</label>
-                        <select class="form-select" id="country" >
+                        <label class="form-label" for="Travel_from">Travel From</label>
+                        <select class="form-select" id="Travel_from" name = 'Travel_from'>
                             
                             {%for elements in Location_alias %}
-                            <option >{{elements}}</option>
+                            <option  >{{elements}}</option>
                             {%endfor%}
-<!--                            <option>United States</option>-->
                         </select>
                         <div class="invalid-feedback">
                             Please select a valid country.
@@ -81,8 +79,8 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label" for="Travel_to">Travel_to</label>
-                        <select class="form-select" id="state" >
+                        <label class="form-label" for="Travel_To">Travel to</label>
+                        <select class="form-select" id="Travel_To" name = 'Travel_To'>
                             {%for elements in Location_alias %}
                             <option>{{elements}}</option>
                             {%endfor%}
@@ -93,10 +91,10 @@
                     </div>
 
                     <div class="col-md-4">
-                        <label class="form-label" for="Return_to">Return_to</label>
-                        <select class="form-select" id="state" >
+                        <label class="form-label" for="Return_To">Return To</label>
+                        <select class="form-select" id="Return_To" name = 'Return_To' >
                             {%for elements in Location_alias %}
-                            <option value="Travel_from">{{elements}}</option>
+                            <option value={{elements}}>{{elements}}</option>
                             {%endfor%}
                         </select>
                         <div class="invalid-feedback">
