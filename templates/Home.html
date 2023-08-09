@@ -12,11 +12,11 @@
     <div class="container">
     <table class="border border-secondary">
         {% for trip in trips %}
-          <tr class="border border-secondary ms-3">
-            <td class="border border-secondary ms-3">{{ trip.travel_id }}</td>
-            <td class="border border-secondary ms-3">{{ trip.travel_from }}</td>
-            <td class="border border-secondary ms-3">{{ trip.travel_to }}</td>
-            <td class="border border-secondary ms-3">{{ trip.travel_return_to }}</td>
+          <tr class="border-3 border-secondary">
+            <td class="border-3 border-secondary">{{ trip.travel_id }}</td>
+            <td class="border-3 border-secondary">{{ trip.travel_from }}</td>
+            <td class="border-3 border-secondary">{{ trip.travel_to }}</td>
+            <td class="border-3 border-secondary">{{ trip.travel_return_to }}</td>
           </tr>
         {% endfor %}
     </table>
