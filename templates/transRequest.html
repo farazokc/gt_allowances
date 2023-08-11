@@ -6,23 +6,27 @@
         }
 
 
+
 </style>
 
 {% include 'navbar.html' %}
 
 <div class="container">
-<!--    <main class="form-signin w-100 m-auto">-->
+    <!--    <main class="form-signin w-100 m-auto">-->
     <main class="m-auto py-3">
         <div class="text-center">
             <h1 class="h3 mb-3 fw-normal">Transport Request</h1>
         </div>
         <div class="p-2">
-            <form action="request/" method="POST">
+            <form action="" method="POST">
                 {% csrf_token %}
                 <div class="row text-center mb-3">
                     <div class="col-md-12">
-                        {% if request.session.Message is not null %}
-                        {{request.session.Message}}
+                        {% if msg %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ msg }}
+                            <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -67,7 +71,9 @@
                 </div>
                 <div class="row text-center mb-3">
                     <div class="col-md-12">
-                        <button class="btn btn-primary my-3 justify-content-center" type="submit" style="width: 150px;">Sign in</button>
+                        <button class="btn btn-primary my-3 justify-content-center" style="width: 150px;" type="submit">
+                            Submit
+                        </button>
                     </div>
                 </div>
             </form>

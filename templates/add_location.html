@@ -10,7 +10,13 @@
             <div class="row align-items-center justify-content-center ms-4">
                 <h1 class="h3 mb-3 fw-normal">Add Location</h1>
             </div>
-
+            <div class="row text-center mb-3">
+                    <div class="col-md-12">
+                        {% if request.session.LS_MSG %}
+                        {{ request.session.LS_MSG }}
+                        {% endif %}
+                    </div>
+                </div>
             <div class="form-floating mb-4">
                 <input class="form-control" id="Location_alias" name="Location_alias" placeholder="Head-office" required type="text">
                 <label for="Location_alias">Location Alias</label>

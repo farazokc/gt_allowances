@@ -6,7 +6,16 @@ class MyBackend(BaseBackend):
     _INSTANCE = None
     __isActive = None
     _Current_logged_in = 1
-
+    errors = {
+        'Trans_Req'    : "'Travel From' cannot be same as 'Travel To' and 'Travel To' cannot be same as 'Return To'",
+        'login_failed' : 'Employee ID or Password not correct',
+         'Location'    :  "Location already saved"
+    }
+    success = {
+        'Trans_Req' : 'Official visit saved succesfully',
+        'Location' :  'Location saved succesfully',
+        'Petrol'   :   'Petrol price added'
+    }
     def __init__(self):
         if MyBackend._INSTANCE is None:
             MyBackend._INSTANCE = self
@@ -21,7 +30,8 @@ class MyBackend(BaseBackend):
         if logged_in:
             self.__isActive = True
             self._Current_logged_in = emp_id
-            print(("ID" , self._Current_logged_in))
+            # print(("ID" , self._Current_logged_in))
+
             return True
         else:
             return False
@@ -29,6 +39,7 @@ class MyBackend(BaseBackend):
     def logout(self):
         self.__isActive = False
         self._Current_logged_in = None
+        # request
         return True
 
     def get_user(self, user_id):
@@ -39,3 +50,8 @@ class MyBackend(BaseBackend):
     
     def get_current_logged_in(self):
         return self._Current_logged_in
+
+    def get_error_msg(self):
+        return self.errors
+    def get_success(self):
+        return self.success

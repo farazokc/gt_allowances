@@ -6,7 +6,7 @@
     <div class="container">
         <form action="" method="POST" class="d-flex" role="search">
             {% csrf_token %}
-            <input aria-label="Search" class="form-control me-2" placeholder="Search" type="text" name="travel_id">
+            <input aria-label="Search" class="form-control me-2" placeholder="Search" type="number" name="travel_id">
             <button class="btn btn-outline-primary" type="submit">Search</button>
         </form>
     </div>
@@ -19,6 +19,7 @@
                 <th class="border-2 border-dark" scope="col">Travel From</th>
                 <th class="border-2 border-dark" scope="col">Travel To</th>
                 <th class="border-2 border-dark" scope="col">Return To</th>
+                <th class="border-2 border-dark" scope="col">Travel Date</th>
             </tr>
             </thead>
             <tbody>
@@ -28,6 +29,7 @@
                 <td class="border-2 border-dark" scope="row">{{ trip.travel_from }}</td>
                 <td class="border-2 border-dark" scope="row">{{ trip.travel_to }}</td>
                 <td class="border-2 border-dark" scope="row">{{ trip.travel_return_to }}</td>
+                <td class="border-2 border-dark" scope="row">{{ trip.travel_date }}</td>
             </tr>
             {% endfor %}
             </tbody>
