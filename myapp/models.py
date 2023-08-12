@@ -4,11 +4,12 @@ from datetime import date
 # Create your models here.
 
 class Users(models.Model):
-    readonly_fields = ('emp_id',)
+    readonly_fields = ('emp_id','Account_balance')
     emp_id = models.AutoField(primary_key=True, editable=True, auto_created=True)
     emp_name = models.CharField(max_length=255)
     emp_pass = models.CharField(max_length=255)
     emp_addr = models.CharField(max_length=255)
+    Account_balance = models.FloatField(editable=False)
     class Meta:
         db_table = 'User'
     
@@ -37,6 +38,7 @@ class Trips(models.Model):
     cost = models.FloatField()
     fuel =  models.FloatField()
     travel_date = models.DateField()
+    approved = models.BooleanField()
     class Meta:
         db_table = 'Trips'
 
@@ -71,4 +73,3 @@ class Fuel_Prices(models.Model):
 
     def __str__(self) -> str:
         return self.fuel_type
-    

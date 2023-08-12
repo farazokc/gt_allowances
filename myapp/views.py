@@ -82,7 +82,7 @@ def Trans_req(request):
             travel_to = request.POST.get("Travel_To")
             Return_to = request.POST.get("Return_To")
 
-            if travel_from == travel_to or travel_to == Return_to:
+            if travel_from == travel_to or travel_to == Return_to and ( not travel_from  and not travel_to):
                 LOV.update({'error_msg': backend.get_error_msg()['Trans_Req']})
                 print(LOV['error_msg'])
 
@@ -97,9 +97,13 @@ def Trans_req(request):
                     cost = 0
 
                 Trip = Trips(travel_from=travel_from, travel_to=travel_to, emp_id=Emp_id, travel_return_to=Return_to,
-                             travel_distance=distance, cost=cost, fuel=last_updated_price.fuel_price)
+                             travel_distance=distance, cost=cost, fuel=last_updated_price.fuel_price, approved = False)
                 Trip.save()
-
+                User = Users.objects.filter(emp_id = backend.get_current_logged_in()).values('Account_balance').first()
+                current_balance = User['Account_balance']
+                Acc_balance =float( current_balance + cost)
+                User.update(Account_balance = Acc_balance)
+                
                 LOV.update({'msg': backend.get_success()['Trans_Req']})
                 # print(LOV['msg'])
 
@@ -119,8 +123,12 @@ def payment(request):
 
 
 def Home(request):
+    
     # print("OUTSIDE ACTIVE ACCOUNT: ", request.POST.get('travel_id'))
     if backend.get_active() == True:
+        Trip = Trips.objects.filter( emp_id = backend.get_current_logged_in(), approved = False )
+        Account_balance = Trip.aggregate(Sum('cost'))
+        print("Account Balance is: ",Account_balance['cost__sum'])
         # print("INSIDE ACTIVE ACCOUNT: ",request.POST.get('travel_id'))
         travel_id = None
         travel_id = request.POST.get('travel_id')
@@ -181,9 +189,6 @@ def location_save(request):
         return redirect("Index")
 
 
-def plan_trip(request):
-
-        return redirect('Home')
 
 
 def add_petrol_price(request):
@@ -202,10 +207,11 @@ def history(request):
         currentMonth = date.today().replace(day=1)
         month = 7
         year = 2012
-        Trip = Trips.objects.filter(travel_date__month__gte = month, travel_date__year__gte = year , emp_id = backend.get_current_logged_in() )
+        Trip = Trips.objects.filter(travel_date__month__gte = month, travel_date__year__gte = year , emp_id = backend.get_current_logged_in(), approved = False )
         # Sum_Distance = Trip.aggregate(sum('travel_distance'))
         Sum_Distance = Trip.aggregate(Sum('travel_distance'))
         Sum_Cost = Trip.aggregate(Sum('cost'))
+        T = Trip.update(approved = True)
         print(Sum_Distance, Sum_Cost)
 
     return render(request, "history.html")
