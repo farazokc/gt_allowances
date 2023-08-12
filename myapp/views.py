@@ -3,10 +3,11 @@ from allowances.auth import MyBackend
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from datetime import date
+from django.db.models import Sum
 
 from .models import Users, Locations, Trips, Fuel_Prices
 
-# from db_helper import *
+
 
 backend = MyBackend.getInstance()
 
@@ -100,7 +101,7 @@ def Trans_req(request):
                 Trip.save()
 
                 LOV.update({'msg': backend.get_success()['Trans_Req']})
-                print(LOV['msg'])
+                # print(LOV['msg'])
 
             return render(request, 'transRequest.html', context = LOV) #Todo Send Context
         else:
@@ -125,7 +126,7 @@ def Home(request):
         travel_id = request.POST.get('travel_id')
         # print("Travel ID: ", travel_id)
         if travel_id:
-            print('true')
+            # print('true')
             trip = Trips.objects.filter(emp_id=backend.get_current_logged_in(), travel_id=travel_id).values('travel_id',
                                                                                                             'travel_from',
                                                                                                             'travel_to',
@@ -137,7 +138,7 @@ def Home(request):
             trip = Trips.objects.filter(emp_id=backend.get_current_logged_in()).values('travel_id', 'travel_from',
                                                                                        'travel_to', 'travel_return_to','travel_date')
 
-        print("Trips: ", trip)
+        # print("Trips: ", trip)
         context = {
             "trips": trip,
         }
@@ -197,6 +198,14 @@ def add_petrol_price(request):
 
 
 def history(request):
-    currentMonth = date.today().replace(day=1)
+    if request.method == 'GET':
+        currentMonth = date.today().replace(day=1)
+        month = 7
+        year = 2012
+        Trip = Trips.objects.filter(travel_date__month__gte = month, travel_date__year__gte = year , emp_id = backend.get_current_logged_in() )
+        # Sum_Distance = Trip.aggregate(sum('travel_distance'))
+        Sum_Distance = Trip.aggregate(Sum('travel_distance'))
+        Sum_Cost = Trip.aggregate(Sum('cost'))
+        print(Sum_Distance, Sum_Cost)
 
     return render(request, "history.html")
