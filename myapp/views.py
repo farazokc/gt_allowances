@@ -2,8 +2,9 @@
 from allowances.auth import MyBackend
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
-from datetime import date
+from datetime import date, datetime
 from django.db.models import Sum
+import requests
 
 from .models import Users, Locations, Trips, Fuel_Prices
 
@@ -69,6 +70,35 @@ def Logout(request):
     backend.logout()
     return redirect("Index")
 
+# {
+#     "destination_addresses": [
+#         "Gatronova House, 10 Beaumont Rd, Civil Lines Karachi, Karachi City, Sindh, Pakistan"
+#     ],
+#     "origin_addresses": [
+#         "Drigh Rd Station Rd, Drigh Road Drigh Colony Shah Faisal Colony, Karachi, Karachi City, Sindh, Pakistan"
+#     ],
+#     "rows": [
+#         {
+#             "elements": [
+#                 {
+#                     "distance": {
+#                         "text": "12.7 km",
+#                         "value": 12749
+#                     },
+#                     "duration": {
+#                         "text": "20 mins",
+#                         "value": 1209
+#                     },
+#                     "origin": "Drigh Road Station Road, Drigh Road Drigh Colony Shah Faisal Colony, Karachi",
+#                     "destination": "Gatronova House, Beaumont Road, Civil Lines Karachi",
+#                     "status": "OK"
+#                 }
+#             ]
+#         }
+#     ],
+#     "status": "OK"
+# }
+
 
 def Trans_req(request):
     if backend.get_active() is True:
@@ -77,31 +107,55 @@ def Trans_req(request):
             'Location_alias': data,
         }
         if request.method == 'POST':
-            travel_from = request.POST.get("Travel_from")
-            print(travel_from)
-            travel_to = request.POST.get("Travel_To")
-            Return_to = request.POST.get("Return_To")
+            travel_from_alias = request.POST.get("Travel_from")
+            travel_to_alias = request.POST.get("Travel_To")
+            return_to_alias = request.POST.get("Return_To")
 
-            if travel_from == travel_to or travel_to == Return_to and ( not travel_from  and not travel_to):
+            if travel_from_alias == travel_to_alias or travel_to_alias == return_to_alias and ( not travel_from_alias  and not travel_to_alias):
                 LOV.update({'error_msg': backend.get_error_msg()['Trans_Req']})
                 print(LOV['error_msg'])
 
             else:
                 Emp_id = backend.get_current_logged_in()
-                distance = 10
+
+                travel_from = Locations.objects.filter(loc_name=travel_from_alias, emp_id = backend.get_current_logged_in())\
+                    .values('loc_address').first()
+                travel_to = Locations.objects.filter(loc_name=travel_to_alias, emp_id=backend.get_current_logged_in()) \
+                    .values('loc_address').first()
+                return_to = Locations.objects.filter(loc_name=return_to_alias, emp_id=backend.get_current_logged_in()) \
+                    .values('loc_address').first()
+
+                # ************ DISTANCE MATRIX API ************
+                key = 'LAXzSKbQ6f1w3fGeQxQN8lKM4VVqh'
+                r1 = requests.get(f'https://api.distancematrix.ai/maps/api/distancematrix/json?origins={travel_from}&destinations={travel_to}&key={key}').json()
+                r2 = requests.get(f'https://api.distancematrix.ai/maps/api/distancematrix/json?origins={travel_to}&destinations={return_to}&key={key}').json()
+                d1 = float(r1['rows'][0]['elements'][0]['distance']['value'])
+                d2 = float(r2['rows'][0]['elements'][0]['distance']['value'])
+                print("d1: ", d1, "   type: ", type(d1))
+                print("d2: ", d2, "   type: ", type(d2))
+                distance = (d1+d2)/1000
+                print("distance: ", distance, "   type: ", type(distance))
+
+                # **********************************************
+
                 last_updated_price = Fuel_Prices.objects.filter(fuel_type='PETROL').order_by('-fuel_date').first()
 
                 if distance > 0 and last_updated_price.fuel_price > 0:
                     cost = (distance / 10) * last_updated_price.fuel_price
+                    print("Cost: ", cost)
                 else:
                     cost = 0
 
-                Trip = Trips(travel_from=travel_from, travel_to=travel_to, emp_id=Emp_id, travel_return_to=Return_to,
+                Trip = Trips(travel_from=travel_from_alias, travel_to=travel_to_alias, emp_id=Emp_id, travel_return_to=return_to_alias,
                              travel_distance=distance, cost=cost, fuel=last_updated_price.fuel_price, approved = False)
                 Trip.save()
                 User = Users.objects.filter(emp_id = backend.get_current_logged_in()).values('Account_balance').first()
                 current_balance = User['Account_balance']
-                Acc_balance =float( current_balance + cost)
+
+                if current_balance == None:
+                    current_balance = 0
+
+                Acc_balance = current_balance + cost
                 User.update(Account_balance = Acc_balance)
                 
                 LOV.update({'msg': backend.get_success()['Trans_Req']})
@@ -112,7 +166,6 @@ def Trans_req(request):
             return render(request, 'transRequest.html', context = LOV)
     else:
         return redirect("Index")
-    # ------------------------------------------------------
 
 
 def payment(request):
@@ -167,6 +220,7 @@ def Add_Locations(request):
 def get_all_locations():
     location: list
     location = Locations.objects.values_list('loc_name', flat=True)
+    print("LOCATIONS FROM SERVER: \n", location)
     # Employees.objects.values_list('eng_name', flat=True)
     return location
 
@@ -202,16 +256,40 @@ def add_petrol_price(request):
         return render(request, "add_petrol.html")
 
 
-def history(request):
-    if request.method == 'GET':
-        currentMonth = date.today().replace(day=1)
-        month = 7
-        year = 2012
-        Trip = Trips.objects.filter(travel_date__month__gte = month, travel_date__year__gte = year , emp_id = backend.get_current_logged_in(), approved = False )
+def allowances(request):
+    if request.method == 'GET': #page load
+        currentMonth = datetime.now().month
+        currentYear = datetime.now().year
+        print("Current Month: ", currentMonth)
+        print("Current Year: ", currentYear)
+        Trip = Trips.objects.filter(travel_date__month__gte = currentMonth,
+                                    travel_date__year__gte = currentYear,
+                                    emp_id = backend.get_current_logged_in(),
+                                    approved = False )
         # Sum_Distance = Trip.aggregate(sum('travel_distance'))
         Sum_Distance = Trip.aggregate(Sum('travel_distance'))
+        count = Trip.count()
         Sum_Cost = Trip.aggregate(Sum('cost'))
         T = Trip.update(approved = True)
         print(Sum_Distance, Sum_Cost)
 
-    return render(request, "history.html")
+    # return render(request, "allowances.html")
+
+      # print(Sum_Distance, Sum_Cost)
+        context = {
+            'Sum_Distance' : Sum_Distance ,
+            'Sum_Cost' : Sum_Cost ,
+            'Count'     : count
+        }
+        print(context)
+        return render(request, "allowances.html", context = context)
+    elif request.method == 'POST': # form submission
+        # year = request.POST.get('FELD_NAME')
+        # month = request.POST.get('FELD_NAME')
+        Trip = Trips.objects.filter(travel_date__month__gte=month, travel_date__year__gte=year,
+                                    emp_id=backend.get_current_logged_in())
+        # Sum_Distance = Trip.aggregate(sum('travel_distance'))
+        count = Trip.count()
+        Sum_Distance = Trip.aggregate(Sum('travel_distance'))
+        Sum_Cost = Trip.aggregate(Sum('cost'))
+    return render(request, "allowances.html", context=context)

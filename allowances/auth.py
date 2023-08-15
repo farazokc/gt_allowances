@@ -4,7 +4,7 @@ from myapp.models import Users
 
 class MyBackend(BaseBackend):
     _INSTANCE = None
-    __isActive = None
+    __isActive = True
     _Current_logged_in = 1
     errors = {
         'Trans_Req'    : "'Travel From' cannot be same as 'Travel To' and 'Travel To' cannot be same as 'Return To'",

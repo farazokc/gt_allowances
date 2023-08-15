@@ -12,7 +12,7 @@
 {% include 'navbar.html' %}
 
 <div class="container">
-    <!--    <main class="form-signin w-100 m-auto">-->
+<!--        <main class="form-signin w-100 m-auto">-->
     <main class="m-auto py-3">
         <div class="text-center">
             <h1 class="h3 mb-3 fw-normal">Transport Request</h1>
@@ -60,15 +60,22 @@
                         <label class="form-label" for="Return_To">Return To</label>
                         <select class="form-select" id="Return_To" name='Return_To'>
                             {%for elements in Location_alias %}
-                            <option value={{elements}}>{{elements}}</option>
+                            <option>{{elements}}</option>
                             {%endfor%}
                         </select>
+
                         <div class="invalid-feedback">
                             Please provide a valid state.
                         </div>
-
                     </div>
                 </div>
+<!--                <script>-->
+<!--                    function printLoc(name) {-->
+<!--                        let list = document.getElementById(name);-->
+<!--                        console.log(list.value);-->
+<!--                    }-->
+
+<!--                </script>-->
                 <div class="row text-center mb-3">
                     <div class="col-md-12">
                         <button class="btn btn-primary my-3 justify-content-center" style="width: 150px;" type="submit">
@@ -80,7 +87,7 @@
         </div>
     </main>
 </div>
-</main>
+<!--</main>-->
 </body>
 
 {% include 'footer.html' %}

@@ -9,7 +9,7 @@ class Users(models.Model):
     emp_name = models.CharField(max_length=255)
     emp_pass = models.CharField(max_length=255)
     emp_addr = models.CharField(max_length=255)
-    Account_balance = models.FloatField(editable=False)
+    Account_balance = models.FloatField(editable=False, null=True)
     class Meta:
         db_table = 'User'
     
@@ -20,7 +20,7 @@ class Locations(models.Model):
     loc_id = models.AutoField(primary_key=True, editable=True, auto_created=True)
     loc_name = models.CharField(max_length=255)
     loc_address = models.CharField(max_length=255)
-    emp_id = models.IntegerField(null=True)
+    emp_id = models.IntegerField()
     class Meta:
         db_table = 'Locations'
     def __str__(self) -> str:
@@ -38,7 +38,7 @@ class Trips(models.Model):
     cost = models.FloatField()
     fuel =  models.FloatField()
     travel_date = models.DateField()
-    approved = models.BooleanField()
+    approved = models.BooleanField(null=True)
     class Meta:
         db_table = 'Trips'
 
