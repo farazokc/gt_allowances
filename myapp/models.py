@@ -73,3 +73,13 @@ class Fuel_Prices(models.Model):
 
     def __str__(self) -> str:
         return self.fuel_type
+
+class Reciepts(models.Model):
+    reciept_id = models.AutoField( primary_key=True, editable=False, auto_created=True)
+    sum_distance = models.IntegerField()
+    trips = models.ForeignKey(Trips, on_delete=models.DO_NOTHING)
+    dated = models.DateField()
+    emp_id = models.IntegerField()
+
+    def __str__(self) -> str:
+        return str(self.reciept_id)
