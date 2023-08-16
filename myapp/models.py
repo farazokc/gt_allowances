@@ -12,7 +12,7 @@ class Users(models.Model):
     Account_balance = models.FloatField(editable=False, null=True)
     class Meta:
         db_table = 'User'
-    
+
     def __str__(self) -> str:
         return self.emp_name
 class Locations(models.Model):
@@ -38,7 +38,7 @@ class Trips(models.Model):
     cost = models.FloatField()
     fuel =  models.FloatField()
     travel_date = models.DateField()
-    approved = models.BooleanField(null=True)
+    approved = models.BooleanField(default=False)
     class Meta:
         db_table = 'Trips'
 
@@ -52,13 +52,15 @@ class Trips(models.Model):
                 self.travel_id = 1
                 self.travel_date = date.today()
         super().save(*args, **kwargs)
-   
+
     def __str__(self) -> str:
         return "emp_id: "+str(self.emp_id)+" "+ ("travel_id: ") + str(self.travel_id)
-        
+
+
+
+
 class Fuel_Prices(models.Model):
     price_fields = ('emp_id','fuel_date')
-
     price_id = models.AutoField(primary_key=True, editable=True, auto_created=True)
     fuel_type = models.CharField(max_length=255)
     fuel_price = models.IntegerField()
@@ -73,13 +75,15 @@ class Fuel_Prices(models.Model):
 
     def __str__(self) -> str:
         return self.fuel_type
-
 class Reciepts(models.Model):
-    reciept_id = models.AutoField( primary_key=True, editable=False, auto_created=True)
+    reciept_id = models.IntegerField( primary_key=True, editable=False )
     sum_distance = models.IntegerField()
-    trips = models.ForeignKey(Trips, on_delete=models.DO_NOTHING)
-    dated = models.DateField()
+    trips = models.ManyToManyField(Trips)
     emp_id = models.IntegerField()
+    dated = models.DateField()
+    paid = models.BooleanField(default=False)
 
+    class Meta:
+        db_table = 'Reciepts'
     def __str__(self) -> str:
         return str(self.reciept_id)

@@ -6,7 +6,7 @@ from datetime import date, datetime
 from django.db.models import Sum
 import requests
 
-from .models import Users, Locations, Trips, Fuel_Prices
+from .models import Users, Locations, Trips, Fuel_Prices, Reciepts
 
 
 
@@ -14,6 +14,7 @@ backend = MyBackend.getInstance()
 
 
 def index(request):
+    request.session['title'] = "Login"
     if backend.get_active() == True:
         # Check for session persistence
         # ******************************
@@ -33,6 +34,7 @@ def Login(request):
     # ******************************
 
     if backend.get_active() == True:
+        request.session['title'] = "Login"
         # Check for session persistence
         # ******************************
         # print("RETURNING TO HOME ", backend.get_active())
@@ -102,6 +104,8 @@ def Logout(request):
 
 def Trans_req(request):
     if backend.get_active() is True:
+
+        request.session['title'] = "Transport Request"
         data = get_all_locations()
         LOV = {
             'Location_alias': data,
@@ -168,17 +172,20 @@ def Trans_req(request):
         return redirect("Index")
 
 
-def payment(request):
-    if backend.get_active() == True:
-        return render(request, 'allowances.html')
-    else:
-        return redirect("Index")
+# def payment(request):
+#     if backend.get_active() == True:
+#         request.session['title'] = "Allowances"
+#         print(request.session)
+#         return render(request, 'allowances.html')
+#     else:
+#         return redirect("Index")
 
 
 def Home(request):
     
     # print("OUTSIDE ACTIVE ACCOUNT: ", request.POST.get('travel_id'))
     if backend.get_active() == True:
+        request.session['title'] = "Home"
         Trip = Trips.objects.filter( emp_id = backend.get_current_logged_in(), approved = False )
         Account_balance = Trip.aggregate(Sum('cost'))
         print("Account Balance is: ",Account_balance['cost__sum'])
@@ -212,6 +219,7 @@ def Home(request):
 
 def Add_Locations(request):
     if backend.get_active() == True:
+        request.session['title'] = "Add Location"
         return render(request, 'add_location.html')
     else:
         return redirect("Index")
@@ -229,6 +237,7 @@ def get_all_locations():
 def location_save(request):
 
     if backend.get_active() is True:
+        request.session['title'] = "Save Location"
         loc_alias = request.POST.get("Location_alias")
         loc_address = request.POST.get("Location_address")
         loc_check = Locations.objects.filter(loc_address = loc_address, loc_name =loc_alias, emp_id = backend.get_current_logged_in() )
@@ -246,7 +255,10 @@ def location_save(request):
 
 
 def add_petrol_price(request):
+    request.session['title'] = "Fuel Prices"
     if request.method == "POST":
+        del request.session
+        request.session['title'] = "Fuel Prices"
         ft = request.POST.get("fuel_type")
         fpp = request.POST.get("fuel_price")
         fp = Fuel_Prices(fuel_price=fpp, fuel_type=ft)
@@ -258,6 +270,7 @@ def add_petrol_price(request):
 
 def allowances(request):
     if request.method == 'GET': #page load
+        request.session['title'] = "Allowances"
         currentMonth = datetime.now().month
         currentYear = datetime.now().year
         print("Current Month: ", currentMonth)
@@ -270,8 +283,9 @@ def allowances(request):
         Sum_Distance = Trip.aggregate(Sum('travel_distance'))
         count = Trip.count()
         Sum_Cost = Trip.aggregate(Sum('cost'))
-        T = Trip.update(approved = True)
-        print(Sum_Distance, Sum_Cost)
+        Trip_list = Trip.objects.values('travel_id')
+        print(Trip_list)
+                # T = Trip.update(approved = True)
 
     # return render(request, "allowances.html")
 
@@ -293,3 +307,15 @@ def allowances(request):
         Sum_Distance = Trip.aggregate(Sum('travel_distance'))
         Sum_Cost = Trip.aggregate(Sum('cost'))
     return render(request, "allowances.html", context=context)
+
+# TODO WITH FAST API
+# @api_view(['POST'])
+# def pay_cash(request, reciept):
+#     Rec = Reciepts.objects.filter(reciept_id = reciept)
+#     Rec.update(paid = True)
+#     if Rec:
+#         return redirect("Home", context ={'Return':'true'} )
+#         # return render(request = request, context={'Return':'true'})
+#     else:
+#         return redirect("Index", context ={'Return':'true'} )
+

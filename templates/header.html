@@ -3,7 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <title>Add Petrol Price</title>
+    {% if 'title' in request.session %}
+            <title> {{request.session.title}}</title>
+    {% else %}
+    <title> Allowances </title>
+    {% endif %}
+<!--    <title>Add Petrol Price</title>-->
     <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" rel="stylesheet">
     <link href="https://gatron.com/wp-content/uploads/2022/02/Gatron-footer-logo.png" rel="icon" type="image/x-icon">
@@ -116,6 +121,18 @@
             border-top-right-radius: 0;
         }
 
+        /* Chrome, Safari, Edge, Opera */
 
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
     </style>
 </head>

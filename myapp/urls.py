@@ -23,12 +23,12 @@ urlpatterns = [
     path("Login/", views.Login, name="Login"),
     path('Home/', views.Home, name = 'Home'),
     path('Transport/', views.Trans_req, name = 'Transport_Request'),
-    path('Payment/', views.payment, name = 'Payment'),
     path('test/', views.Home, name = 'Test'),
     path('add_location/', views.Add_Locations, name = 'locations'),
     path('add_location/Location_request/', views.location_save, name = 'add_loc'),
     re_path(r'^Logout/$', views.Logout, name = 'Logout'),
     path('add_price/', views.add_petrol_price, name = 'pprice'),
     path('allowances/', views.allowances, name = 'allowances'),
+
 ]
 
