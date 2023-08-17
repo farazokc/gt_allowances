@@ -80,7 +80,7 @@ class Reciepts(models.Model):
     sum_distance = models.IntegerField()
     trips = models.ManyToManyField(Trips)
     emp_id = models.IntegerField()
-    dated = models.DateField()
+    dated = models.DateField(null = True)
     paid = models.BooleanField(default=False)
     Total_Cost = models.FloatField(null = True)
     No_of_Trips= models.IntegerField(null = True)

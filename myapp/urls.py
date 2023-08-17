@@ -29,6 +29,8 @@ urlpatterns = [
     re_path(r'^Logout/$', views.Logout, name = 'Logout'),
     path('add_price/', views.add_petrol_price, name = 'pprice'),
     path('allowances/', views.allowances, name = 'allowances'),
+    path('Cash_dept/', views.cash_dept, name = 'cash_dept'),
+
 
 ]
 

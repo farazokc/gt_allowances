@@ -10,7 +10,9 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 import calendar
-
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
 from .models import Users, Locations, Trips, Fuel_Prices, Reciepts
 
 
@@ -348,13 +350,30 @@ def allowances(request):
         travel_id_list = []
         for Tr in Trip:
             travel_id_list.append(Tr.travel_id)
+        print(    travel_id_list)
         print('Helloooo Worlddd')
-        Recep = Reciepts.objects.filter(trips__travel_id__in  = travel_id_list,trips__emp_id = backend.get_current_logged_in())
+        Recep = Reciepts.objects.filter(trips__travel_id__in  = travel_id_list,trips__emp_id = backend.get_current_logged_in()).values('paid', 'reciept_id','dated').distinct()
+        print(Recep)
+        # if Recep:
+        #     if Recep.first()['paid'] == True:
+        #         context = {
+        #             'Emp_id': backend.get_current_logged_in(),
+        #             'month': calendar.month_name[currentMonth],
+        #             'year': currentYear,
+        #             'Sum_Distance': round(Sum_Distance['travel_distance__sum']),
+        #             'Sum_Cost': round(Sum_Cost['cost__sum']),
+        #             'Count': count,
+        #             'cashed_on': Recep['dated'],
+        #             'receipt_id': Recep['reciept_id'],
+        #             'status':'Paid',
+        #         }
+        #         return render(request, "allowances.html", context=context)
+        print(Recep)
         if not Recep:
             Rec = Reciepts.objects.create(sum_distance=Sum_Distance['travel_distance__sum'],
                                   Total_Cost=Sum_Cost['cost__sum'],
                                   No_of_Trips=count, emp_id=
-                                  backend.get_current_logged_in(), dated=datetime.now())
+                                  backend.get_current_logged_in())
             for Tr in Trip:
                 Rec.trips.add(Tr)
                 Rec.save()
@@ -368,6 +387,7 @@ def allowances(request):
                     'cashed_on': None,
                     'receipt_id': Rec.reciept_id
                 }
+
         else:
             context = {
                 'Emp_id': backend.get_current_logged_in(),
@@ -377,11 +397,8 @@ def allowances(request):
                 'Sum_Cost': round(Sum_Cost['cost__sum']),
                 'Count': count,
                 'cashed_on': None,
-                'receipt_id': Recep.reciept_id
+                'receipt_id': Recep['reciept_id']
             }
-
-
-
         print(context)
         return render_to_pdf('pdf.html', context)
         return render(request, "allowances.html", context=context)
@@ -394,3 +411,43 @@ def render_to_pdf(template_src, context_dict={}):
     if pdf.err:
         return HttpResponse("Invalid PDF", status_code=400, content_type='text/plain')
     return HttpResponse(result.getvalue(), content_type='application/pdf')
+
+# api_view("POST")
+# def cash_dept(request):
+#     if request.method == 'POST':
+#         Rec_number=request.POST.get('reciept_id')
+#         Reciept = Reciepts.objects.filter(reciept_id = Rec_number, paid=False)
+#         Trip_id = Reciept.values('trips__travel_id').distinct()
+#         for id in Trip_id:
+#             Trip = Trips.filter(travel_id = id)
+#             Trip.update(approved=True)
+#         if Reciept:
+#             Reciept.update(paid = True, Dated=datetime.now())
+#             return "The Cashed is handeled"
+#         else:
+#             return 'No reciept Found'
+
+
+# Chat GFT code
+@csrf_exempt
+def cash_dept(request):
+    if request.method == 'POST':
+            data = json.loads(request.body)
+            reciept_id = data.get('reciept_id')
+
+            if reciept_id is not None:
+                receipt = Reciepts.objects.filter(reciept_id=reciept_id, paid=False)
+
+                if receipt.exists():
+                    receipt.update(paid=True, dated=datetime.now())
+                    Trip_id = Reciepts.objects.filter(reciept_id = reciept_id).values('trips__travel_id')
+                    for id in Trip_id:
+                        Trip = Trips.objects.filter(travel_id=id['trips__travel_id'])
+                        Trip.update(approved=True)
+                    return JsonResponse({"message": "Receipt has been handled"})
+                else:
+                    return JsonResponse({"message": "No receipt found"}, status=404)
+            else:
+                return JsonResponse({"message": "Invalid request data"}, status=400)
+    else:
+        return JsonResponse({"message": "Invalid request method"}, status=405)
