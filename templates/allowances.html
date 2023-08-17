@@ -41,12 +41,7 @@
                                name="year"
                                placeholder="Year"
                                type="number"
-                               {%if year%}
-                               value='year'>
-
-                        {%else%}
                                value='{% now "Y" %}'>
-                         {%endif%}
                     </div>
                     <div class="col">
                         <button class="btn btn-outline-primary" style="width:100px" type="submit">Search</button>
