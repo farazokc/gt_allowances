@@ -55,21 +55,16 @@ def Login(request):
 
         if session_user:
             print(session_user)
-            # context = {
-            #     "message": "Login successful"
-            # }
             return redirect("Home")
-            # return render(request, 'Home.html', context=context)
         else:
-            # context = {
-            #     "message": "Login failed"
-            # }
+            msg = backend.get_error_msg()['login_failed']
+            request.session['msg'] = msg
+            print("LOGIN FAIL MESSAGE: ", request.session['msg'])
+            return   redirect("Index")
 
-            if not session_user:
-                # Todo Lofin Failed Msg
 
                 # return render(request, 'index.html', context=context)
-                return redirect("Index")
+
 
 
 @api_view(['POST'])
@@ -166,7 +161,7 @@ def Trans_req(request):
 
                 Acc_balance = current_balance + cost
                 User.update(Account_balance = Acc_balance)
-                
+
                 LOV.update({'msg': backend.get_success()['Trans_Req']})
                 print("hello Mssg: ",LOV)
 
@@ -188,7 +183,7 @@ def Trans_req(request):
 
 
 def Home(request):
-    
+
     # print("OUTSIDE ACTIVE ACCOUNT: ", request.POST.get('travel_id'))
     if backend.get_active() == True:
         request.session['title'] = "Home"
@@ -277,6 +272,8 @@ def add_petrol_price(request):
         return redirect("Index")
 
 def allowances(request):
+    currentMonth = datetime.now().month
+    currentYear = datetime.now().year
     if backend.get_active() is None:
         return redirect("Index")
     global context

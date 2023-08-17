@@ -12,40 +12,40 @@
         <div class="">
             <form action="" method="GET">
                 <div class="row">
-                                    <div  class="col">
-                    <h1 class="h3 fw-normal d-flex justify-content-end">Date:</h1>
-                </div>
+                    <div class="col">
+                        <h1 class="h3 fw-normal d-flex justify-content-end">Date:</h1>
+                    </div>
                     <div class="col">
                         <select class="form-control" name="month">
-                        <optgroup label="Select Month">
-                            <option value="0">Current Month</option>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </optgroup>
-                    </select>
+                            <optgroup label="Select Month">
+                                <option {% if month in None %} selected {% endif %} value="0">Current Month</option>
+                                <option {% if month in 'January' %} selected {% endif %} value="1">January</option>
+                                <option {% if month in  '' %} selected {% endif %} value="2">February</option>
+                                <option {% if month in '' %} selected {% endif %} value="3">March</option>
+                                <option {% if month in '' %} selected {% endif %} value="4">April</option>
+                                <option {% if month in '' %} selected {% endif %} value="5">May</option>
+                                <option {% if month in '' %} selected {% endif %} value="6">June</option>
+                                <option {% if month in '' %} selected {% endif %} value="7">July</option>
+                                <option {% if month in '' %} selected {% endif %} value="8">August</option>
+                                <option {% if month in '' %} selected {% endif %} value="9">September</option>
+                                <option {% if month in '' %} selected {% endif %} value="10">October</option>
+                                <option {% if month in '' %} selected {% endif %} value="11">November</option>
+                                <option {% if month in '' %} selected {% endif %} value="12">December</option>
+                            </optgroup>
+                        </select>
                     </div>
                     <div class="col">
                         <input class="form-control"
-                           max="2026"
-                           min="2020"
-                           name="year"
-                           placeholder="Year"
-                           type="number"
-                           value='{% now "Y" %}'>
+                               max="2026"
+                               min="2020"
+                               name="year"
+                               placeholder="Year"
+                               type="number"
+                               value='{% now "Y" %}'>
                     </div>
                     <div class="col">
-                    <button class="btn btn-outline-primary" style="width:100px" type="submit">Search</button>
-                </div>
+                        <button class="btn btn-outline-primary" style="width:100px" type="submit">Search</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -121,7 +121,8 @@
                     <div class="d-flex justify-content-center">
                         {% csrf_token %}
                         <button class="btn btn-outline-primary ms-4" type="submit"
-                        style="width:300px">Print</button>
+                                style="width:300px">Print
+                        </button>
                     </div>
                 </form>
             </div>

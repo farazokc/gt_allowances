@@ -8,7 +8,16 @@
             <img alt="" src="https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png">
         </div>
         <h1 class="h3 mb-3 fw-normal">Sign in</h1>
-
+<div class="row text-center mb-3">
+                    <div class="col-md-12">
+                        {% if msg %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ request.session.msg }}
+                            <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
         <div class="form-floating">
             <input class="form-control" id="floatingInput" name="emp_id" placeholder="ASBC123" required type="number" min = 1 >
             <label for="floatingInput">Employee Code</label>
