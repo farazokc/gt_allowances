@@ -272,8 +272,8 @@ def add_petrol_price(request):
             return render(request, "add_petrol.html")
     else:
         return redirect("Index")
-
 def allowances(request):
+
     currentMonth = datetime.now().month
     currentYear = datetime.now().year
     if backend.get_active() is None:
@@ -305,39 +305,53 @@ def allowances(request):
                                     travel_date__year = currentYear,
                                     emp_id = backend.get_current_logged_in(),
                                     approved = False )
-        Sum_Distance = Trip.aggregate(Sum('travel_distance'))
-        count = Trip.count()
-        Sum_Cost = Trip.aggregate(Sum('cost'))
+        if Trip:
+            Sum_Distance = Trip.aggregate(Sum('travel_distance'))
+            count = Trip.count()
+            Sum_Cost = Trip.aggregate(Sum('cost'))
 
-        if Sum_Distance ['travel_distance__sum'] == None:
-            Sum_Distance['travel_distance__sum'] = 0
-        if count == None:
-            count = 0
-        if  Sum_Cost ['cost__sum'] == None:
-            Sum_Cost['cost__sum'] = 0
+            if Sum_Distance ['travel_distance__sum'] == None:
+                Sum_Distance['travel_distance__sum'] = 0
+            if count == None:
+                count = 0
+            if  Sum_Cost ['cost__sum'] == None:
+                Sum_Cost['cost__sum'] = 0
 
 
-        if currentMonth == '0':
-            currentMonth = datetime.now().month
-            month = calendar.month_name[int(currentMonth)]
+            if currentMonth == '0':
+                currentMonth = datetime.now().month
+                month = calendar.month_name[int(currentMonth)]
+            else:
+                month = calendar.month_name[int(currentMonth)]
+                context = {
+                    'Emp_id' : backend.get_current_logged_in(),
+                    'month':month,
+                    'year': currentYear,
+                    'Sum_Distance' : round(Sum_Distance ['travel_distance__sum']),
+                    'Sum_Cost' : round(Sum_Cost ['cost__sum']),
+                    'Count'     : count,
+                    'cashed_on': None,
+                    'receipt_id': None,
+                     }
+                return render(request, "allowances.html", context=context)
         else:
-            month = calendar.month_name[int(currentMonth)]
-        context = {
-            'Emp_id' : backend.get_current_logged_in(),
-            'month':month,
-            'year': currentYear,
-            'Sum_Distance' : round(Sum_Distance ['travel_distance__sum']),
-            'Sum_Cost' : round(Sum_Cost ['cost__sum']),
-            'Count'     : count,
-            'cashed_on': None,
-            'receipt_id': None,
-        }
-        # Rec = Reciepts.objects.create(sum_distance = Sum_Distance['travel_distance__sum'],Total_Cost  = Sum_Cost['cost__sum'],
-        #                               No_of_Trips = count, emp_id =
-        #                               backend.get_current_logged_in(),dated = datetime.now())
-
-        print(context)
-        return render(request, "allowances.html", context = context)
+            Receipt = Reciepts.objects.filter(emp_id = backend.get_current_logged_in()).\
+                values('reciept_id','dated','trips','sum_distance','Total_Cost','Total_Cost','Total_Cost').\
+                order_by('-reciept_id').first()
+            print('akjsbckjcsab',Receipt)
+            # Receipt = Reciepts.objects.filter(reciept_id = int(Receipt_id['reciept_id']))
+            # print(Receipt)
+            context = {
+                'Emp_id': backend.get_current_logged_in(),
+                # 'month': Receipt['month'],
+                # 'year': Receipt['year'],
+                'Sum_Distance': Receipt['sum_distance'],
+                'Sum_Cost': Receipt['Total_Cost'],
+                'Count': Receipt['Total_Cost'],
+                'cashed_on': Receipt['dated'],
+                'receipt_id': Receipt['receipt_id'],
+            }
+            return render(request, "allowances.html",context= context)
 
     elif request.method == 'POST':
         Trip = Trips.objects.filter(travel_date__month__gte = currentMonth,
@@ -353,22 +367,7 @@ def allowances(request):
         print(    travel_id_list)
         print('Helloooo Worlddd')
         Recep = Reciepts.objects.filter(trips__travel_id__in  = travel_id_list,trips__emp_id = backend.get_current_logged_in()).values('paid', 'reciept_id','dated').distinct()
-        print(Recep)
-        # if Recep:
-        #     if Recep.first()['paid'] == True:
-        #         context = {
-        #             'Emp_id': backend.get_current_logged_in(),
-        #             'month': calendar.month_name[currentMonth],
-        #             'year': currentYear,
-        #             'Sum_Distance': round(Sum_Distance['travel_distance__sum']),
-        #             'Sum_Cost': round(Sum_Cost['cost__sum']),
-        #             'Count': count,
-        #             'cashed_on': Recep['dated'],
-        #             'receipt_id': Recep['reciept_id'],
-        #             'status':'Paid',
-        #         }
-        #         return render(request, "allowances.html", context=context)
-        print(Recep)
+
         if not Recep:
             Rec = Reciepts.objects.create(sum_distance=Sum_Distance['travel_distance__sum'],
                                   Total_Cost=Sum_Cost['cost__sum'],
