@@ -2,119 +2,84 @@
 
 {% include 'navbar.html' %}
 
-<style>
-<!--        div {-->
-<!--            outline: 1px solid red;-->
-<!--        }-->
-</style>
 
 <body>
 <main>
     <div class="container w-50 d-flex justify-content-evenly my-3">
-            <h1>Allowances</h1>
+        <h1>Allowances</h1>
     </div>
     <div class="container w-50">
-        <div class="d-flex justify-content-evenly">
-            <div>
-                <h1 class="h3 fw-normal">Date:</h1>
-            </div>
-            <div>
-                <select class="form-control" name="month">
-                    <optgroup label="Select Month">
-                        <option value="0">Current Month</option>
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </optgroup>
-                </select>
-            </div>
-            <div>
-                <input class="form-control"
-                       max="2026"
-                       min="2020"
-                       name="year"
-                       placeholder="Year"
-                       type="number"
-                       value='{% now "Y" %}'>
-            </div>
-            <div>
-                <button class="btn btn-primary" style="width:100px" type="submit">Search</button>
-            </div>
+        <div class="">
+            <form action="" method="GET">
+                <div class="row">
+                                    <div  class="col">
+                    <h1 class="h3 fw-normal d-flex justify-content-end">Date:</h1>
+                </div>
+                    <div class="col">
+                        <select class="form-control" name="month">
+                        <optgroup label="Select Month">
+                            <option value="0">Current Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </optgroup>
+                    </select>
+                    </div>
+                    <div class="col">
+                        <input class="form-control"
+                           max="2026"
+                           min="2020"
+                           name="year"
+                           placeholder="Year"
+                           type="number"
+                           value='{% now "Y" %}'>
+                    </div>
+                    <div class="col">
+                    <button class="btn btn-outline-primary" style="width:100px" type="submit">Search</button>
+                </div>
+                </div>
+            </form>
         </div>
     </div>
-    <!--    <div class="container w-50">-->
-    <!--        <div class="row">-->
-    <!--&lt;!&ndash;            <div class="col">&ndash;&gt;-->
-    <!--&lt;!&ndash;                    <h1 class="h3 fw-normal fw-bold">Allowance</h1>&ndash;&gt;-->
-    <!--&lt;!&ndash;            </div>&ndash;&gt;-->
-    <!--&lt;!&ndash;            <div class="col"></div>&ndash;&gt;-->
-    <!--            <div class="col-1 justify-content-end" style="outline: 1px solid black;">-->
-    <!--                <h1 class="h3 fw-normal">Date:</h1>-->
-    <!--            </div>-->
-    <!--            <div class="col d-flex">-->
-    <!--                <div class="col mx-5">-->
-    <!--                    <select class="form-control" name="month">-->
-    <!--                    <option value="1">January</option>-->
-    <!--                    <option value="2">February</option>-->
-    <!--                    <option value="3">March</option>-->
-    <!--                    <option value="4">April</option>-->
-    <!--                    <option value="5">May</option>-->
-    <!--                    <option value="6">June</option>-->
-    <!--                    <option value="7">July</option>-->
-    <!--                    <option value="8">August</option>-->
-    <!--                    <option value="9">September</option>-->
-    <!--                    <option value="10">October</option>-->
-    <!--                    <option value="11">November</option>-->
-    <!--                    <option value="12">December</option>-->
-    <!--                </select>-->
-    <!--                </div>-->
-    <!--                <div class="col">-->
-    <!--                    <input  class="form-control"-->
-    <!--                            placeholder="Year"-->
-    <!--                            type="number"-->
-    <!--                            name="year"-->
-    <!--                            min="2020"-->
-    <!--                            max="2026">-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--            <div class="col">-->
-    <!--                <button class="btn btn-primary" type="submit">Search</button>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </div>-->
     <br>
     <div class="container border border-dark-subtle w-50">
         <div class="container my-3">
             <div class="row">
                 <div class="col d-flex justify-content-center">
                     <p class="fs-3">Status:</p>
-                    <p class="fs-3 fw-bold">show status here</p>
+                    {% if receipt_id %}
+                    <p class="fs-3 fw-bold">&nbsp;Paid</p>
+                    {% else %}
+                    <p class="fs-3 fw-bold">&nbsp;Unpaid</p>
+                    {% endif %}
                 </div>
 
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-start">
-                    <p class="fs-5 fw-bold">Employee ID: show emp here</p>
+                    <p class="fs-5"><b>Employee ID:</b> {{Emp_id}}</p>
                 </div>
+                {% if receipt_id %}
                 <div class="col d-flex justify-content-end">
-                    <p class="fs-5 fw-bold">Reciept ID: show reciept here</p>
+                    <p class="fs-5"><b>Receipt ID:</b> {{receipt_id}}</p>
                 </div>
+                {% endif %}
             </div>
             <div class="row">
                 <div class="col d-flex justify-content-start">
                     <p class="fs-5 fw-bold">Date: </p>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <p class="fs-5">Show date here</p>
+                    <p class="fs-5">{{month}}, {{year}}</p>
                 </div>
             </div>
             <div class="row">
@@ -122,7 +87,7 @@
                     <p class="fs-5 fw-bold">Trips: </p>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <p class="fs-5">Show trips here </p>
+                    <p class="fs-5">{{Count}} Trips</p>
                 </div>
             </div>
             <div class="row">
@@ -130,9 +95,10 @@
                     <p class="fs-5 fw-bold">Travel Distance: </p>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <p class="fs-5">Show travel distance</p>
+                    <p class="fs-5">{{Sum_Distance}} Km</p>
                 </div>
             </div>
+            {% if cashed_on %}
             <div class="row">
                 <div class="col d-flex justify-content-start">
                     <p class="fs-5 fw-bold">Cashed on: </p>
@@ -141,18 +107,23 @@
                     <p class="fs-5">show cashed on date</p>
                 </div>
             </div>
+            {% endif %}
             <div class="row">
                 <div class="col d-flex justify-content-start">
                     <p class="fs-5 fw-bold">Total: </p>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <p class="fs-5">Rs. (monies)</p>
+                    <p class="fs-5">Rs. {{Sum_Cost}}</p>
                 </div>
             </div>
             <div class="row my-3">
-                <div class="col d-flex justify-content-center">
-                    <button class="btn btn-primary ms-4 w-50" type="submit">Print</button>
-                </div>
+                <form action="" method="POST">
+                    <div class="d-flex justify-content-center">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-primary ms-4" type="submit"
+                        style="width:300px">Print</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

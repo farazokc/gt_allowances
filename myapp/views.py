@@ -5,6 +5,11 @@ from rest_framework.decorators import api_view
 from datetime import date, datetime
 from django.db.models import Sum
 import requests
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import calendar
 
 from .models import Users, Locations, Trips, Fuel_Prices, Reciepts
 
@@ -116,8 +121,7 @@ def Trans_req(request):
             return_to_alias = request.POST.get("Return_To")
 
             if travel_from_alias == travel_to_alias or travel_to_alias == return_to_alias and ( not travel_from_alias  and not travel_to_alias):
-                LOV.update({'error_msg': backend.get_error_msg()['Trans_Req']})
-                print(LOV['error_msg'])
+                LOV.update({'msg': backend.get_error_msg()['Trans_Req']})
 
             else:
                 Emp_id = backend.get_current_logged_in()
@@ -131,6 +135,7 @@ def Trans_req(request):
 
                 # ************ DISTANCE MATRIX API ************
                 key = 'LAXzSKbQ6f1w3fGeQxQN8lKM4VVqh'
+
                 r1 = requests.get(f'https://api.distancematrix.ai/maps/api/distancematrix/json?origins={travel_from}&destinations={travel_to}&key={key}').json()
                 r2 = requests.get(f'https://api.distancematrix.ai/maps/api/distancematrix/json?origins={travel_to}&destinations={return_to}&key={key}').json()
                 d1 = float(r1['rows'][0]['elements'][0]['distance']['value'])
@@ -163,10 +168,11 @@ def Trans_req(request):
                 User.update(Account_balance = Acc_balance)
                 
                 LOV.update({'msg': backend.get_success()['Trans_Req']})
-                # print(LOV['msg'])
+                print("hello Mssg: ",LOV)
 
-            return render(request, 'transRequest.html', context = LOV) #Todo Send Context
+            return render(request, 'transRequest.html', context = LOV)
         else:
+            print("hello Mssg: ", LOV)
             return render(request, 'transRequest.html', context = LOV)
     else:
         return redirect("Index")
@@ -227,10 +233,11 @@ def Add_Locations(request):
 
 def get_all_locations():
     location: list
-    location = Locations.objects.values_list('loc_name', flat=True)
+    location = Locations.objects.filter(emp_id  = backend.get_current_logged_in())
+    loc = location.values_list('loc_name', flat=True)
     print("LOCATIONS FROM SERVER: \n", location)
     # Employees.objects.values_list('eng_name', flat=True)
-    return location
+    return loc
 
 
 @api_view(['POST'])
@@ -255,67 +262,138 @@ def location_save(request):
 
 
 def add_petrol_price(request):
-    request.session['title'] = "Fuel Prices"
-    if request.method == "POST":
-        del request.session
+    if backend.get_active() is True:
         request.session['title'] = "Fuel Prices"
-        ft = request.POST.get("fuel_type")
-        fpp = request.POST.get("fuel_price")
-        fp = Fuel_Prices(fuel_price=fpp, fuel_type=ft)
-        fp.save()
-        return redirect("Transport_Request")
+        if request.method == "POST":
+            request.session['title'] = "Fuel Prices"
+            ft = request.POST.get("fuel_type")
+            fpp = request.POST.get("fuel_price")
+            fp = Fuel_Prices(fuel_price=fpp, fuel_type=ft)
+            fp.save()
+            return redirect("Transport_Request")
+        else:
+            return render(request, "add_petrol.html")
     else:
-        return render(request, "add_petrol.html")
-
+        return redirect("Index")
 
 def allowances(request):
+    if backend.get_active() is None:
+        return redirect("Index")
+    global context
+    context = {
+        'Emp_id':None ,
+        'month': None,
+        'year': None,
+        'Sum_Distance':None,
+        'Sum_Cost': None,
+        'Count': None,
+        'cashed_on': None,
+        'receipt_id': None,
+    }
+    currentMonth = datetime.now().month
+    currentYear = datetime.now().year
     if request.method == 'GET': #page load
-        request.session['title'] = "Allowances"
         currentMonth = datetime.now().month
         currentYear = datetime.now().year
-        print("Current Month: ", currentMonth)
-        print("Current Year: ", currentYear)
+        if request.GET.get('month'):
+            currentMonth = request.GET.get('month')
+            currentYear = request.GET.get('year')
+            if currentMonth == '0':
+                currentMonth = datetime.now().month
+        request.session['title'] = "Allowances"
+
+        Trip = Trips.objects.filter(travel_date__month= currentMonth,
+                                    travel_date__year = currentYear,
+                                    emp_id = backend.get_current_logged_in(),
+                                    approved = False )
+        Sum_Distance = Trip.aggregate(Sum('travel_distance'))
+        count = Trip.count()
+        Sum_Cost = Trip.aggregate(Sum('cost'))
+
+        if Sum_Distance ['travel_distance__sum'] == None:
+            Sum_Distance['travel_distance__sum'] = 0
+        if count == None:
+            count = 0
+        if  Sum_Cost ['cost__sum'] == None:
+            Sum_Cost['cost__sum'] = 0
+
+
+        if currentMonth == '0':
+            currentMonth = datetime.now().month
+            month = calendar.month_name[int(currentMonth)]
+        else:
+            month = calendar.month_name[int(currentMonth)]
+        context = {
+            'Emp_id' : backend.get_current_logged_in(),
+            'month':month,
+            'year': currentYear,
+            'Sum_Distance' : round(Sum_Distance ['travel_distance__sum']),
+            'Sum_Cost' : round(Sum_Cost ['cost__sum']),
+            'Count'     : count,
+            'cashed_on': None,
+            'receipt_id': None,
+        }
+        # Rec = Reciepts.objects.create(sum_distance = Sum_Distance['travel_distance__sum'],Total_Cost  = Sum_Cost['cost__sum'],
+        #                               No_of_Trips = count, emp_id =
+        #                               backend.get_current_logged_in(),dated = datetime.now())
+
+        print(context)
+        return render(request, "allowances.html", context = context)
+
+    elif request.method == 'POST':
         Trip = Trips.objects.filter(travel_date__month__gte = currentMonth,
                                     travel_date__year__gte = currentYear,
                                     emp_id = backend.get_current_logged_in(),
                                     approved = False )
-        # Sum_Distance = Trip.aggregate(sum('travel_distance'))
         Sum_Distance = Trip.aggregate(Sum('travel_distance'))
         count = Trip.count()
         Sum_Cost = Trip.aggregate(Sum('cost'))
-        Trip_list = Trip.objects.values('travel_id')
-        print(Trip_list)
-                # T = Trip.update(approved = True)
+        travel_id_list = []
+        for Tr in Trip:
+            travel_id_list.append(Tr.travel_id)
+        print('Helloooo Worlddd')
+        Recep = Reciepts.objects.filter(trips__travel_id__in  = travel_id_list,trips__emp_id = backend.get_current_logged_in())
+        if not Recep:
+            Rec = Reciepts.objects.create(sum_distance=Sum_Distance['travel_distance__sum'],
+                                  Total_Cost=Sum_Cost['cost__sum'],
+                                  No_of_Trips=count, emp_id=
+                                  backend.get_current_logged_in(), dated=datetime.now())
+            for Tr in Trip:
+                Rec.trips.add(Tr)
+                Rec.save()
+                context = {
+                    'Emp_id': backend.get_current_logged_in(),
+                    'month': calendar.month_name[currentMonth],
+                    'year': currentYear,
+                    'Sum_Distance': round(Sum_Distance['travel_distance__sum']),
+                    'Sum_Cost': round(Sum_Cost['cost__sum']),
+                    'Count': count,
+                    'cashed_on': None,
+                    'receipt_id': Rec.reciept_id
+                }
+        else:
+            context = {
+                'Emp_id': backend.get_current_logged_in(),
+                'month': calendar.month_name[currentMonth],
+                'year': currentYear,
+                'Sum_Distance': round(Sum_Distance['travel_distance__sum']),
+                'Sum_Cost': round(Sum_Cost['cost__sum']),
+                'Count': count,
+                'cashed_on': None,
+                'receipt_id': Recep.reciept_id
+            }
 
-    # return render(request, "allowances.html")
 
-      # print(Sum_Distance, Sum_Cost)
-        context = {
-            'Sum_Distance' : Sum_Distance ,
-            'Sum_Cost' : Sum_Cost ,
-            'Count'     : count
-        }
+
         print(context)
-        return render(request, "allowances.html", context = context)
-    elif request.method == 'POST': # form submission
-        # year = request.POST.get('FELD_NAME')
-        # month = request.POST.get('FELD_NAME')
-        Trip = Trips.objects.filter(travel_date__month__gte=month, travel_date__year__gte=year,
-                                    emp_id=backend.get_current_logged_in())
-        # Sum_Distance = Trip.aggregate(sum('travel_distance'))
-        count = Trip.count()
-        Sum_Distance = Trip.aggregate(Sum('travel_distance'))
-        Sum_Cost = Trip.aggregate(Sum('cost'))
-    return render(request, "allowances.html", context=context)
+        return render_to_pdf('pdf.html', context)
+        return render(request, "allowances.html", context=context)
 
-# TODO WITH FAST API
-# @api_view(['POST'])
-# def pay_cash(request, reciept):
-#     Rec = Reciepts.objects.filter(reciept_id = reciept)
-#     Rec.update(paid = True)
-#     if Rec:
-#         return redirect("Home", context ={'Return':'true'} )
-#         # return render(request = request, context={'Return':'true'})
-#     else:
-#         return redirect("Index", context ={'Return':'true'} )
-
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html  = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if pdf.err:
+        return HttpResponse("Invalid PDF", status_code=400, content_type='text/plain')
+    return HttpResponse(result.getvalue(), content_type='application/pdf')

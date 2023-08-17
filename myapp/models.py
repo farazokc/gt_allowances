@@ -34,9 +34,9 @@ class Trips(models.Model):
     travel_from = models.CharField(max_length=255)
     travel_to = models.CharField(max_length=255)
     travel_return_to = models.CharField(max_length=255)
-    travel_distance = models.FloatField()
-    cost = models.FloatField()
-    fuel =  models.FloatField()
+    travel_distance = models.FloatField(default=0)
+    cost = models.FloatField(default=0)
+    fuel =  models.FloatField(default=0)
     travel_date = models.DateField()
     approved = models.BooleanField(default=False)
     class Meta:
@@ -63,7 +63,7 @@ class Fuel_Prices(models.Model):
     price_fields = ('emp_id','fuel_date')
     price_id = models.AutoField(primary_key=True, editable=True, auto_created=True)
     fuel_type = models.CharField(max_length=255)
-    fuel_price = models.IntegerField()
+    fuel_price = models.IntegerField(default=0)
     fuel_date = models.DateField(max_length=255, editable= False)
     class Meta:
         db_table = 'Fuel_Prices'
@@ -76,14 +76,26 @@ class Fuel_Prices(models.Model):
     def __str__(self) -> str:
         return self.fuel_type
 class Reciepts(models.Model):
-    reciept_id = models.IntegerField( primary_key=True, editable=False )
+    reciept_id = models.IntegerField( primary_key=True, editable=False)
     sum_distance = models.IntegerField()
     trips = models.ManyToManyField(Trips)
     emp_id = models.IntegerField()
     dated = models.DateField()
     paid = models.BooleanField(default=False)
+    Total_Cost = models.FloatField(null = True)
+    No_of_Trips= models.IntegerField(null = True)
 
     class Meta:
         db_table = 'Reciepts'
     def __str__(self) -> str:
         return str(self.reciept_id)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only on creation
+            last_reciept = Reciepts.objects.order_by('-reciept_id').first()
+            print(last_reciept)
+            if last_reciept:
+                self.reciept_id = last_reciept.reciept_id + 1
+            else:
+                self.reciept_id = 1
+        super().save(*args, **kwargs)

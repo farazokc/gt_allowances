@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Print Allowance</title>
+    <style>
+        #invoice-POS{
+      box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+      padding:2mm;
+      margin: 0 auto;
+      width: 44mm;
+      background: #FFF;
+      }
+
+      ::selection {background: #f31544; color: #FFF;}
+      ::moz-selection {background: #f31544; color: #FFF;}
+
+    h1{
+      font-size: 1.5em;
+      color: #222;
+    }
+    h2{
+    font-size: 1.5em;
+    }
+    h3{
+      font-size: 1.2em;
+      font-weight: 300;
+      line-height: 2em;
+    }
+    p{
+      font-size: 1em;
+      color: #666;
+      line-height: 1.2em;
+    }
+
+    #top, #mid,#bot{
+      border-bottom: 1px solid #EEE;
+    }
+
+    #top{min-height: 100px;}
+    #mid{
+    min-height: 80px;
+    font-size: 1em;
+    }
+    #bot{ min-height: 50px;}
+
+    #top .logo{
+        background-size: 60px 60px;
+    }
+    .clientlogo{
+      float: left;
+        height: 60px;
+        width: 60px;
+        background: url(https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png) no-repeat;
+        background-size: 60px 60px;
+      border-radius: 50px;
+    }
+    .info{
+      display: block;
+      font-size: 1.5em;
+      margin-left: 0;
+    }
+    .title{
+      float: right;
+    }
+    .title p{text-align: right;}
+
+    table{
+      border-collapse: collapse;
+    }
+    .tabletitle{
+      font-size: 1em;
+      background: #EEE;
+    }
+    .service{border-bottom: 1px solid #EEE;}
+    .item{width: 24mm;}
+    .itemtext{font-size: 1em;}
+
+    </style>
+<body>
+
+<div id="invoice-POS">
+
+    <center id="top">
+        <div class="logo">
+            <img src="https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png">
+        </div>
+        <div class="info">
+            <h2>Allowance Reciept</h2>
+        </div>
+    </center>
+
+    <div id="mid">
+        <div class="info">
+            <p>
+                <b>
+                                    Employee ID:
+                </b>
+ {{Emp_id}}<br>
+            </p>
+        </div>
+    </div>
+
+    <div id="bot">
+        <div id="table">
+            <table>
+                <tr class="tabletitle">
+                    <td class="item"><h2>Status</h2></td>
+                    <td class="Hours"><h2></h2></td>
+                    <td class="Rate">
+                        <h2>
+                            {% if receipt_id %}Paid
+            {% else %}Unpaid
+            {% endif %}
+                        </h2>
+                    </td>
+                </tr>
+
+                        <tr class="tabletitle">
+                    <td class="item"><h2>Reciept ID</h2></td>
+                    <td class="Hours"><h2></h2></td>
+                    <td class="Rate">
+                        <h2>
+                            {{receipt_id}}
+                        </h2>
+                    </td>
+                </tr>
+
+                <tr class="tabletitle">
+                    <td class="item"><h2>Date</h2></td>
+                    <td class="Hours"><h2></h2></td>
+                    <td class="Rate">
+                        <h2>
+                            {{month}}, {{year}}
+                        </h2>
+                    </td>
+                </tr>
+
+                <tr class="tabletitle">
+                    <td class="item"><h2>Trips</h2></td>
+                    <td class="Hours"><h2></h2></td>
+                    <td class="Rate">
+                        <h2>
+                            {{Count}} Trips
+                        </h2>
+                    </td>
+                </tr>
+
+                <tr class="tabletitle">
+                    <td class="item"><h2>Travel Distance</h2></td>
+                    <td class="Hours"><h2></h2></td>
+                    <td class="Rate">
+                        <h2>
+                            {{Sum_Distance}} KM
+                        </h2>
+                    </td>
+                </tr>
+
+                <tr class="tabletitle">
+                    <td class="item"><h2>Total</h2></td>
+                    <td class="Hours"><h2></h2></td>
+                    <td class="Rate">
+                        <h2>
+                            Rs. {{Sum_Cost}}
+                        </h2>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<br>
+<br>
+<br>
+<br>
+<table  style="
+    text-align: center;">
+    <tr>
+        <td>_____________________________</td>
+        <td></td>
+        <td>_____________________________</td>
+    </tr>
+    <tr>
+        <td>Cash Department</td>
+        <td></td>
+        <td>HoD</td>
+        </tr>
+
+</table>
+
+
+</body>
+</html>
