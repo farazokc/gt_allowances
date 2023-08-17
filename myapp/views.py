@@ -336,7 +336,7 @@ def allowances(request):
                 return render(request, "allowances.html", context=context)
         else:
             Receipt = Reciepts.objects.filter(emp_id = backend.get_current_logged_in()).\
-                values('reciept_id','dated','trips','sum_distance','Total_Cost','Total_Cost','Total_Cost').\
+                values('reciept_id','dated','trips','sum_distance','Total_Cost','Total_Cost','No_of_Trips').\
                 order_by('-reciept_id').first()
             print('akjsbckjcsab',Receipt)
             # Receipt = Reciepts.objects.filter(reciept_id = int(Receipt_id['reciept_id']))
@@ -347,9 +347,9 @@ def allowances(request):
                 # 'year': Receipt['year'],
                 'Sum_Distance': Receipt['sum_distance'],
                 'Sum_Cost': Receipt['Total_Cost'],
-                'Count': Receipt['Total_Cost'],
+                'Count': Receipt['No_of_Trips'],
                 'cashed_on': Receipt['dated'],
-                'receipt_id': Receipt['receipt_id'],
+                'receipt_id': Receipt['reciept_id'],
             }
             return render(request, "allowances.html",context= context)
 
