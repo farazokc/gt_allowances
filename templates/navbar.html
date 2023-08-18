@@ -1,39 +1,53 @@
-<nav class="navbar navbar-expand-lg fs-4" style="background-color: #e3f2fd;">
-    <div class="container-fluid">
-        <a href="http://localhost:8000/Home/">
+<style>
+    #main_navbar{
+        background: rgb(2,0,36);
+        background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(227,242,253,1) 0%, rgba(33,160,254,1) 100%);
+    }
+</style>
+
+<nav id="main_navbar" class="navbar navbar-expand-lg fs-6" style="background-color: #e3f2fd;">
+    <div class="container">
+            <div class="w-25 d-flex justify-content-start">
+                        <a href="http://localhost:8000/Home/">
             <img alt="Gatronova logo" src="https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png"
-             style="height: 40px;">
+                 style="height: 40px;">
         </a>
+            </div>
         <button aria-controls="navbarsExample05" aria-expanded="false" aria-label="Toggle navigation"
                 class="navbar-toggler"
                 data-bs-target="#navbarsExample05" data-bs-toggle="collapse" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse ms-3" id="navbarsExample05">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a aria-current="page" class="nav-link active" href="http://localhost:8000/Home/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <!--    TODO: HREF ROUTING              -->
-                    <a class="nav-link" href="http://localhost:8000/Transport/">Transport Req</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="http://localhost:8000/add_location/">Add Location</a>
-                </li>
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="http://localhost:8000/add_price/">Add Petrol Price</a>-->
-<!--                </li>-->
-                <li class="nav-item">
-                    <a class="nav-link" href="http://localhost:8000/allowances/">Allowances</a>
-                </li>
-                <li class="nav-item">
-                    <form action="/Logout/" method="POST">
-                        {% csrf_token %}
-                        <button class="btn fs-4 pt-2" type="submit">Logout</button>
-                    </form>
-                </li>
-            </ul>
+        <div class="d-flex ">
+            <div class="collapse navbar-collapse ms-3" id="navbarsExample05">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a aria-current="page" class="nav-link text-white" href="http://localhost:8000/Home/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <!--    TODO: HREF ROUTING              -->
+                        <a class="nav-link text-white" href="http://localhost:8000/Transport/">Transport Req</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="http://localhost:8000/add_location/">Add Location</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="http://localhost:8000/approval/">Approval</a>
+                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-white" href="http://localhost:8000/add_price/">Add Petrol Price</a>
+                                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="http://localhost:8000/allowances/">Allowances</a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/Logout/" method="POST">
+                            {% csrf_token %}
+                            <button class="btn pt-2 fw-bold text-white" type="submit">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>

@@ -1,15 +1,8 @@
 {% include 'header.html' %}
-
-<style>
-<!--    div {-->
-<!--        outline: 1px solid red;-->
-<!--    }-->
-</style>
-
 <body>
 <main>
     {% include 'navbar.html' %}
-    <div class="container">
+    <div class="d-flex justify-content-center">
         <form action="" method="POST" class="d-flex" role="search">
             {% csrf_token %}
             <div class="row" style="width: 50vw">
@@ -60,6 +53,13 @@
     </div>
     {% endif %}
 </main>
+<div style="height: 50px;">
+
+</div>
+<div id="footer"  class="d-flex justify-content-center bg-primary-subtle">
+    Designed and developed by Muhammad Huzaifa and Faraz Naeem Piracha
+</div>
+
 </body>
 
 {% include 'footer.html' %}

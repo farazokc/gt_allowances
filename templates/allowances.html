@@ -56,7 +56,7 @@
             <div class="row">
                 <div class="col d-flex justify-content-center">
                     <p class="fs-3">Status:</p>
-                    {% if receipt_id %}
+                    {% if status %}
                     <p class="fs-3 fw-bold">&nbsp;Paid</p>
                     {% else %}
                     <p class="fs-3 fw-bold">&nbsp;Unpaid</p>
@@ -74,6 +74,7 @@
                 </div>
                 {% endif %}
             </div>
+            {% if not cashed_on %}
             <div class="row">
                 <div class="col d-flex justify-content-start">
                     <p class="fs-5 fw-bold">Date: </p>
@@ -82,6 +83,7 @@
                     <p class="fs-5">{{month}}, {{year}}</p>
                 </div>
             </div>
+            {% endif %}
             <div class="row">
                 <div class="col d-flex justify-content-start">
                     <p class="fs-5 fw-bold">Trips: </p>
@@ -104,7 +106,7 @@
                     <p class="fs-5 fw-bold">Cashed on: </p>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <p class="fs-5">show cashed on date</p>
+                    <p class="fs-5">{{cashed_on}}</p>
                 </div>
             </div>
             {% endif %}
@@ -116,20 +118,28 @@
                     <p class="fs-5">Rs. {{Sum_Cost}}</p>
                 </div>
             </div>
+            {% if not cashed_on %}
             <div class="row my-3">
-                <form action="" method="POST">
+                <form action="" method="POST" target="_blank">
                     <div class="d-flex justify-content-center">
                         {% csrf_token %}
-                        <button class="btn btn-outline-primary ms-4" type="submit"
-                                style="width:300px">Print
-                        </button>
+                        <button class="btn btn-outline-primary ms-4"
+                                type="submit"
+                                style="width:300px">Print</button>
                     </div>
                 </form>
             </div>
+            {% endif %}
         </div>
     </div>
 </main>
 <div style="height: 30px"></div>
+<div style="height: 50px;">
+
+</div>
+<div id="footer"  class="d-flex justify-content-center bg-primary-subtle">
+    Designed and developed by Muhammad Huzaifa and Faraz Naeem Piracha
+</div>
 </body>
 
 {% include 'footer.html' %}

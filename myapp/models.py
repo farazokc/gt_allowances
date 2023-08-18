@@ -14,7 +14,8 @@ class Users(models.Model):
         db_table = 'User'
 
     def __str__(self) -> str:
-        return self.emp_name
+        return str(self.emp_id) + " | "  +  str(self.emp_name)
+
 class Locations(models.Model):
     readonly_fields = ('loc_id',)
     loc_id = models.AutoField(primary_key=True, editable=True, auto_created=True)
@@ -84,6 +85,7 @@ class Reciepts(models.Model):
     paid = models.BooleanField(default=False)
     Total_Cost = models.FloatField(null = True)
     No_of_Trips= models.IntegerField(null = True)
+    reciept_creation_date = models.DateField(null=True)
 
     class Meta:
         db_table = 'Reciepts'
@@ -93,7 +95,8 @@ class Reciepts(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:  # Only on creation
             last_reciept = Reciepts.objects.order_by('-reciept_id').first()
-            print(last_reciept)
+            # print(last_reciept)
+            reciept_creation_date = date.today()
             if last_reciept:
                 self.reciept_id = last_reciept.reciept_id + 1
             else:

@@ -21,6 +21,7 @@ backend = MyBackend.getInstance()
 
 
 def index(request):
+    return redirect("Login")
     request.session['title'] = "Login"
     if backend.get_active() == True:
         # Check for session persistence
@@ -32,14 +33,21 @@ def index(request):
     return render(request, 'index.html')
 
 
-@api_view(['POST'])
 def Login(request):
-
     # Check for session persistence
     # ******************************
     # print("LOGIN RUNS ", backend.get_active())
     # ******************************
+    if request.method == 'GET':
+        request.session['title'] = "Login"
+        if backend.get_active() == True:
+        # Check for session persistence
+        # ******************************
+        # print("RETURNING TO HOME ", backend.rget_active())
+        # ******************************
 
+            return redirect("Home")
+        return render(request, 'index.html')
     if backend.get_active() == True:
         request.session['title'] = "Login"
         # Check for session persistence
@@ -56,18 +64,19 @@ def Login(request):
         session_user = backend.authenticate(request, emp_id=emp_id, emp_pass=emp_pass)
 
         if session_user:
-            print(session_user)
             return redirect("Home")
         else:
             msg = backend.get_error_msg()['login_failed']
-            request.session['msg'] = msg
-            print("LOGIN FAIL MESSAGE: ", request.session['msg'])
-            return   redirect("Index")
+            context = {
+                'msg': msg
+            }
+            return render(request, "index.html", context=context)
+            # return False
+
+
 
 
                 # return render(request, 'index.html', context=context)
-
-
 
 @api_view(['POST'])
 def Logout(request):
@@ -132,25 +141,21 @@ def Trans_req(request):
 
                 # ************ DISTANCE MATRIX API ************
                 key = 'LAXzSKbQ6f1w3fGeQxQN8lKM4VVqh'
-
                 r1 = requests.get(f'https://api.distancematrix.ai/maps/api/distancematrix/json?origins={travel_from}&destinations={travel_to}&key={key}').json()
                 r2 = requests.get(f'https://api.distancematrix.ai/maps/api/distancematrix/json?origins={travel_to}&destinations={return_to}&key={key}').json()
                 d1 = float(r1['rows'][0]['elements'][0]['distance']['value'])
                 d2 = float(r2['rows'][0]['elements'][0]['distance']['value'])
-                print("d1: ", d1, "   type: ", type(d1))
-                print("d2: ", d2, "   type: ", type(d2))
                 distance = (d1+d2)/1000
-                print("distance: ", distance, "   type: ", type(distance))
-
                 # **********************************************
 
                 last_updated_price = Fuel_Prices.objects.filter(fuel_type='PETROL').order_by('-fuel_date').first()
-
-                if distance > 0 and last_updated_price.fuel_price > 0:
-                    cost = (distance / 10) * last_updated_price.fuel_price
-                    print("Cost: ", cost)
-                else:
+                if distance > 1000 or distance == 0:
+                    LOV.update({'msg': 'Error! Location error'})
                     cost = 0
+                    return render(request, 'transRequest.html', context = LOV)
+
+                elif distance > 0 and last_updated_price.fuel_price > 0:
+                    cost = (distance / 10) * last_updated_price.fuel_price
 
                 Trip = Trips(travel_from=travel_from_alias, travel_to=travel_to_alias, emp_id=Emp_id, travel_return_to=return_to_alias,
                              travel_distance=distance, cost=cost, fuel=last_updated_price.fuel_price, approved = False)
@@ -165,11 +170,11 @@ def Trans_req(request):
                 User.update(Account_balance = Acc_balance)
 
                 LOV.update({'msg': backend.get_success()['Trans_Req']})
-                print("hello Mssg: ",LOV)
+
 
             return render(request, 'transRequest.html', context = LOV)
         else:
-            print("hello Mssg: ", LOV)
+
             return render(request, 'transRequest.html', context = LOV)
     else:
         return redirect("Index")
@@ -189,25 +194,53 @@ def Home(request):
     # print("OUTSIDE ACTIVE ACCOUNT: ", request.POST.get('travel_id'))
     if backend.get_active() == True:
         request.session['title'] = "Home"
-        Trip = Trips.objects.filter( emp_id = backend.get_current_logged_in(), approved = False )
-        Account_balance = Trip.aggregate(Sum('cost'))
-        print("Account Balance is: ",Account_balance['cost__sum'])
+        # Trip = Trips.objects.filter( emp_id = backend.get_current_logged_in())
+        # Account_balance = Trip.aggregate(Sum('cost'))
+
         # print("INSIDE ACTIVE ACCOUNT: ",request.POST.get('travel_id'))
         travel_id = None
+        date_in = None
         travel_id = request.POST.get('travel_id')
+        date_in = request.POST.get('date_inp')
         # print("Travel ID: ", travel_id)
-        if travel_id:
+        if travel_id:  # Travel ID search
             # print('true')
-            trip = Trips.objects.filter(emp_id=backend.get_current_logged_in(), travel_id=travel_id).values('travel_id',
+            trip = Trips.objects.filter(emp_id=backend.get_current_logged_in(),
+                                        travel_id=travel_id,
+                                        ).values('travel_id',
                                                                                                             'travel_from',
                                                                                                             'travel_to',
                                                                                                             'travel_return_to',
                                                                                                             'travel_date'
                                                                                                             )
-        else:
+            if date_in:  # Travel ID and Date search
+                trip = Trips.objects.filter(emp_id=backend.get_current_logged_in(),
+                                            travel_id=travel_id,
+                                            travel_date__gte=date_in
+                                            ).values('travel_id',
+                                                     'travel_from',
+                                                     'travel_to',
+                                                     'travel_return_to',
+                                                     'travel_date'
+                                                     )
+        elif date_in: # Travel ID and Date search
+
+            trip = Trips.objects.filter(emp_id=backend.get_current_logged_in(),
+                                        travel_date=date_in
+                                        ).values('travel_id',
+                                                 'travel_from',
+                                                 'travel_to',
+                                                 'travel_return_to',
+                                                 'travel_date'
+                                                 )
+        else: # Default
             # trip = 0
-            trip = Trips.objects.filter(emp_id=backend.get_current_logged_in()).values('travel_id', 'travel_from',
-                                                                                       'travel_to', 'travel_return_to','travel_date')
+            trip = Trips.objects.filter(emp_id=backend.get_current_logged_in()).values('travel_id',
+                                                                                       'travel_from',
+                                                                                       'travel_to',
+                                                                                       'travel_return_to',
+                                                                                       'travel_date')
+
 
         # print("Trips: ", trip)
         context = {
@@ -232,7 +265,7 @@ def get_all_locations():
     location: list
     location = Locations.objects.filter(emp_id  = backend.get_current_logged_in())
     loc = location.values_list('loc_name', flat=True)
-    print("LOCATIONS FROM SERVER: \n", location)
+
     # Employees.objects.values_list('eng_name', flat=True)
     return loc
 
@@ -273,7 +306,6 @@ def add_petrol_price(request):
     else:
         return redirect("Index")
 def allowances(request):
-
     currentMonth = datetime.now().month
     currentYear = datetime.now().year
     if backend.get_active() is None:
@@ -288,6 +320,7 @@ def allowances(request):
         'Count': None,
         'cashed_on': None,
         'receipt_id': None,
+        'status':None,
     }
     currentMonth = datetime.now().month
     currentYear = datetime.now().year
@@ -335,10 +368,9 @@ def allowances(request):
                      }
                 return render(request, "allowances.html", context=context)
         else:
-            Receipt = Reciepts.objects.filter(emp_id = backend.get_current_logged_in()).\
+            Receipt = Reciepts.objects.filter(emp_id = backend.get_current_logged_in(), ).\
                 values('reciept_id','dated','trips','sum_distance','Total_Cost','Total_Cost','No_of_Trips').\
                 order_by('-reciept_id').first()
-            print('akjsbckjcsab',Receipt)
             # Receipt = Reciepts.objects.filter(reciept_id = int(Receipt_id['reciept_id']))
             # print(Receipt)
             context = {
@@ -350,6 +382,8 @@ def allowances(request):
                 'Count': Receipt['No_of_Trips'],
                 'cashed_on': Receipt['dated'],
                 'receipt_id': Receipt['reciept_id'],
+                'status': True,
+
             }
             return render(request, "allowances.html",context= context)
 
@@ -364,10 +398,8 @@ def allowances(request):
         travel_id_list = []
         for Tr in Trip:
             travel_id_list.append(Tr.travel_id)
-        print(    travel_id_list)
-        print('Helloooo Worlddd')
-        Recep = Reciepts.objects.filter(trips__travel_id__in  = travel_id_list,trips__emp_id = backend.get_current_logged_in()).values('paid', 'reciept_id','dated').distinct()
-
+        Recep = (Reciepts.objects.filter(trips__travel_id__in  = travel_id_list,trips__emp_id = backend.get_current_logged_in())
+                 .values('paid', 'reciept_id','dated'   ).distinct())
         if not Recep:
             Rec = Reciepts.objects.create(sum_distance=Sum_Distance['travel_distance__sum'],
                                   Total_Cost=Sum_Cost['cost__sum'],
@@ -385,6 +417,8 @@ def allowances(request):
                     'Count': count,
                     'cashed_on': None,
                     'receipt_id': Rec.reciept_id
+
+
                 }
 
         else:
@@ -396,11 +430,12 @@ def allowances(request):
                 'Sum_Cost': round(Sum_Cost['cost__sum']),
                 'Count': count,
                 'cashed_on': None,
-                'receipt_id': Recep['reciept_id']
+                'receipt_id': Recep[0]['reciept_id'],
+                'status': True,
             }
-        print(context)
+            return render_to_pdf('pdf.html', context)
         return render_to_pdf('pdf.html', context)
-        return render(request, "allowances.html", context=context)
+    return render(request, "allowances.html", context=context)
 
 def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
@@ -411,42 +446,46 @@ def render_to_pdf(template_src, context_dict={}):
         return HttpResponse("Invalid PDF", status_code=400, content_type='text/plain')
     return HttpResponse(result.getvalue(), content_type='application/pdf')
 
-# api_view("POST")
-# def cash_dept(request):
-#     if request.method == 'POST':
-#         Rec_number=request.POST.get('reciept_id')
-#         Reciept = Reciepts.objects.filter(reciept_id = Rec_number, paid=False)
-#         Trip_id = Reciept.values('trips__travel_id').distinct()
-#         for id in Trip_id:
-#             Trip = Trips.filter(travel_id = id)
-#             Trip.update(approved=True)
-#         if Reciept:
-#             Reciept.update(paid = True, Dated=datetime.now())
-#             return "The Cashed is handeled"
-#         else:
-#             return 'No reciept Found'
-
-
-# Chat GFT code
-@csrf_exempt
 def cash_dept(request):
-    if request.method == 'POST':
-            data = json.loads(request.body)
-            reciept_id = data.get('reciept_id')
+        search_id = None
+        if backend.get_active() is not True:
+            return redirect("Index")
+        if request.method == "GET":
+            search_id = request.GET.get('travel_id')
+            # print(search_id)
+            if search_id:
+                Reciept = (Reciepts.objects.filter(reciept_id = search_id, emp_id = backend.get_current_logged_in())\
+                           .values('reciept_id','sum_distance', 'emp_id','Total_Cost', 'paid')).order_by('paid','reciept_id')
+                return render(request, 'approval.html', context=context)
 
+            else:
+                print(backend.get_current_logged_in())
+
+                Reciept = (Reciepts.objects.filter(emp_id=backend.get_current_logged_in())\
+                           .values('reciept_id','sum_distance', 'emp_id','Total_Cost', 'paid')).order_by('paid','reciept_id')
+                print(Reciept)
+                return render(request, 'approval.html', context={'Reciept':Reciept})
+        elif request.method == 'POST':
+            reciept_id = request.POST.get('Rec_id')
             if reciept_id is not None:
                 receipt = Reciepts.objects.filter(reciept_id=reciept_id, paid=False)
-
                 if receipt.exists():
                     receipt.update(paid=True, dated=datetime.now())
-                    Trip_id = Reciepts.objects.filter(reciept_id = reciept_id).values('trips__travel_id')
+                    Trip_id = Reciepts.objects.filter(reciept_id = reciept_id).values('trips__travel_id').distinct()
+                    trip_details = []
+
                     for id in Trip_id:
                         Trip = Trips.objects.filter(travel_id=id['trips__travel_id'])
+                        trip_details.append(id)
                         Trip.update(approved=True)
-                    return JsonResponse({"message": "Receipt has been handled"})
+
+                    context = {
+                        "message": "Receipt has been handled",
+                        "trip_details" : trip_details,
+                    }
                 else:
-                    return JsonResponse({"message": "No receipt found"}, status=404)
-            else:
-                return JsonResponse({"message": "Invalid request data"}, status=400)
-    else:
-        return JsonResponse({"message": "Invalid request method"}, status=405)
+                    context={
+                        'message':'Already paid'
+                    }
+            print(context)
+            return render(request, 'approval.html', context=context)

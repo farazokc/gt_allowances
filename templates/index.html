@@ -2,7 +2,7 @@
 
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
 <main class="form-signin w-100 m-auto">
-    <form action="Login/" method="POST">
+    <form action="" method="POST">
         {% csrf_token %}
         <div class="row align-items-center justify-content-center mb-5">
             <img alt="" src="https://www.gatronova.com/wp-content/uploads/2019/01/logo-web1.png">
@@ -12,7 +12,7 @@
                     <div class="col-md-12">
                         {% if msg %}
                         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            {{ request.session.msg }}
+                            {{ msg }}
                             <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
                         </div>
                         {% endif %}
@@ -27,9 +27,21 @@
                    type="password">
             <label for="floatingPassword">Password</label>
         </div>
-        <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+        <button class="btn btn-primary w-100 py-2" type="submit">Login</button>
+        <div>
+                        <p class="d-flex justify-content-center mt-3">
+                            Not registered? &nbsp;<a href="http://localhost:8000/admin/">Admin Access</a>
+                        </p>
+        </div>
     </form>
 </main>
+
+<div style="height: 50px;">
+
+</div>
+<div id="footer"  class="d-flex justify-content-center bg-primary-subtle">
+    Designed and developed by Muhammad Huzaifa and Faraz Naeem Piracha
+</div>
 </body>
 
 {% include 'footer.html' %}
