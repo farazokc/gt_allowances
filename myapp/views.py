@@ -373,6 +373,8 @@ def allowances(request):
                 order_by('-reciept_id').first()
             # Receipt = Reciepts.objects.filter(reciept_id = int(Receipt_id['reciept_id']))
             # print(Receipt)
+            if not Receipt:
+                return redirect("Transport_Request")
             context = {
                 'Emp_id': backend.get_current_logged_in(),
                 # 'month': Receipt['month'],
